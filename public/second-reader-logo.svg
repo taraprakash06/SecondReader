@@ -1,0 +1,54 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="srGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF2AA6"/>
+      <stop offset="100%" stop-color="#A100FF"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.35 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Icon -->
+  <g transform="translate(70 40)" filter="url(#softGlow)">
+    <!-- book base -->
+    <path d="M40 40C40 23.431 53.431 10 70 10H170C191.091 10 210.52 18.41 225.5 33.39C240.48 18.41 259.909 10 281 10H381C397.569 10 411 23.431 411 40V200C411 216.569 397.569 230 381 230H281C260.636 230 241.107 237.94 226.56 252.49L225.5 253.55L224.44 252.49C209.893 237.94 190.364 230 170 230H70C53.431 230 40 216.569 40 200V40Z" fill="#171717" stroke="url(#srGradient)" stroke-width="8"/>
+
+    <!-- left page -->
+    <path d="M78 54C78 48.477 82.477 44 88 44H166C185.33 44 203.868 51.68 217.53 65.34L218 65.81V210H170C148.907 210 128.64 201.62 113.73 186.71C98.82 171.8 90.44 151.533 90.44 130.44V58C90.44 55.791 88.649 54 86.44 54H78Z" fill="#0F0F13" opacity="0.9"/>
+
+    <!-- right page -->
+    <path d="M373 54C373 48.477 368.523 44 363 44H285C265.67 44 247.132 51.68 233.47 65.34L233 65.81V210H281C302.093 210 322.36 201.62 337.27 186.71C352.18 171.8 360.56 151.533 360.56 130.44V58C360.56 55.791 362.351 54 364.56 54H373Z" fill="#0F0F13" opacity="0.9"/>
+
+    <!-- "second reader" mark: a stylized 2 as a ribbon bookmark -->
+    <path d="M206 76C206 61.641 217.641 50 232 50H250C273.196 50 292 68.804 292 92C292 115.196 273.196 134 250 134H236C229.373 134 224 139.373 224 146V156C224 162.627 229.373 168 236 168H284V190H234C216.327 190 202 175.673 202 158V146C202 127.222 217.222 112 236 112H250C261.046 112 270 103.046 270 92C270 80.954 261.046 72 250 72H232C229.791 72 228 73.791 228 76V84H206V76Z" fill="url(#srGradient)"/>
+
+    <!-- subtle eye/speech dot -->
+    <circle cx="226" cy="226" r="6" fill="#FF2AA6" opacity="0.95"/>
+    <circle cx="244" cy="226" r="6" fill="#A100FF" opacity="0.95"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(540 110)">
+    <text x="0" y="0" dominant-baseline="middle" fill="#0F0F13" font-size="64" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="800" letter-spacing="-1.5">
+      Second
+    </text>
+    <text x="245" y="0" dominant-baseline="middle" fill="#0F0F13" font-size="64" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="800" letter-spacing="-1.5">
+      Reader
+    </text>
+    <rect x="0" y="56" width="460" height="10" rx="5" fill="url(#srGradient)" opacity="0.95"/>
+    <text x="0" y="108" fill="#3F3F46" font-size="18" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="600" letter-spacing="0.2">
+      Trust-first critique partner space
+    </text>
+  </g>
+</svg>
+

@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  WRITER
+  READER
+  BOTH
+}
+
+enum DraftStage {
+  EARLY_DRAFT
+  POLISHED_DRAFT
+  PRE_SUBMISSION
+}
+
+enum FeedbackFocus {
+  BIG_PICTURE
+  LINE_EDITS
+  EMOTIONAL_IMPACT
+  STRUCTURE
+  OTHER
+}
+
+enum FeedbackTonePreference {
+  GENTLE
+  BALANCED
+  DIRECT
+}
+
+enum ReaderAgeCategory {
+  TEEN
+  ADULT
+  SENIOR
+  UNSPECIFIED
+}
+
+enum CritiqueStatus {
+  ACTIVE
+  STOPPED
+  COMPLETED
+}
+
+enum ReputationTag {
+  BIG_PICTURE_THINKING
+  LINE_LEVEL_DETAIL
+  ENCOURAGING_TONE
+  BRUTALLY_HONEST
+  GOOD_WITH_PACING
+  GOOD_WITH_POETRY
+  GOOD_WITH_PROSE
+}
+
+enum SampleGenre {
+  FICTION
+  PERSONAL_ESSAY_MEMOIR
+  POETRY
+  LITERARY_NONFICTION
+  GENRE_FICTION
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(WRITER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  readerProfile ReaderProfile?
+
+  submissions Submission[]         @relation("WriterSubmissions")
+  assignments CritiqueAssignment[] @relation("ReaderAssignments")
+}
+
+model ReaderProfile {
+  id                 String            @id @default(cuid())
+  userId             String            @unique
+  ageCategory        ReaderAgeCategory @default(UNSPECIFIED)
+  writingBackground  String            @default("")
+  genres             String            @default("") // comma-separated for MVP
+  caresAbout         String            @default("")
+  feedbackPhilosophy String            @default("")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedbackSamples FeedbackSample[]
+}
+
+model Submission {
+  id           String        @id @default(cuid())
+  writerId     String
+  title        String
+  genre        String
+  subgenre     String        @default("")
+  wordCount    Int
+  stage        DraftStage
+  focus1       FeedbackFocus
+  focus2       FeedbackFocus?
+  focusOther   String        @default("")
+  tonePref     FeedbackTonePreference
+  notHelpful   String        @default("")
+  initialPages String        // gated content (<= ~3 pages)
+  fullText     String        @default("") // optional: additional pages unlocked later
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  writer      User                @relation("WriterSubmissions", fields: [writerId], references: [id], onDelete: Cascade)
+  assignments CritiqueAssignment[]
+}
+
+model CritiqueAssignment {
+  id            String         @id @default(cuid())
+  submissionId  String
+  readerId      String
+  status        CritiqueStatus @default(ACTIVE)
+  unlockedPages Int            @default(3)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reader     User       @relation("ReaderAssignments", fields: [readerId], references: [id], onDelete: Cascade)
+
+  feedback CritiqueFeedback?
+  tags     FeedbackTag[]
+
+  @@unique([submissionId, readerId])
+  @@index([readerId, status])
+}
+
+model CritiqueFeedback {
+  id           String   @id @default(cuid())
+  assignmentId String   @unique
+  strengths    String   @default("")
+  improvements String   @default("")
+  keyTakeaways String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assignment CritiqueAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  comments   InlineComment[]
+}
+
+model InlineComment {
+  id         String   @id @default(cuid())
+  feedbackId String
+  quote      String   @default("")
+  message    String
+  createdAt  DateTime @default(now())
+
+  feedback CritiqueFeedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+}
+
+model FeedbackTag {
+  id           String        @id @default(cuid())
+  assignmentId String
+  tag          ReputationTag
+  createdAt    DateTime      @default(now())
+
+  assignment CritiqueAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, tag])
+}
+
+model SamplePiece {
+  id        String      @id @default(cuid())
+  title     String      @unique
+  genre     SampleGenre @default(FICTION)
+  text      String
+  createdAt DateTime    @default(now())
+
+  samples FeedbackSample[]
+}
+
+model FeedbackSample {
+  id                 String      @id @default(cuid())
+  readerProfileId    String
+  samplePieceId      String
+  genre              SampleGenre @default(FICTION)
+  publicStrengths    String      @default("")
+  publicImprovements String      @default("")
+  publicKeyTakeaways String      @default("")
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  readerProfile ReaderProfile @relation(fields: [readerProfileId], references: [id], onDelete: Cascade)
+  samplePiece   SamplePiece   @relation(fields: [samplePieceId], references: [id], onDelete: Cascade)
+  comments      SampleInlineComment[]
+
+  @@index([readerProfileId, createdAt])
+}
+
+model SampleInlineComment {
+  id               String   @id @default(cuid())
+  feedbackSampleId String
+  quote            String   @default("")
+  message          String
+  createdAt        DateTime @default(now())
+
+  feedbackSample FeedbackSample @relation(fields: [feedbackSampleId], references: [id], onDelete: Cascade)
+}
