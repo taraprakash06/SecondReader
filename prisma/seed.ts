@@ -3,11 +3,17 @@ import { PrismaClient, ReaderAgeCategory, SampleGenre, UserRole } from "@prisma/
 const db = new PrismaClient();
 
 async function main() {
-  const fictionSample = await db.samplePiece.upsert({
+  const toothTitle = "Anonymous Sample (Fiction): Tooth";
+  await db.samplePiece.updateMany({
     where: { title: "Anonymous Sample (Fiction): The Tooth Fairy" },
+    data: { title: toothTitle },
+  });
+
+  const fictionSample = await db.samplePiece.upsert({
+    where: { title: toothTitle },
     update: { genre: SampleGenre.FICTION },
     create: {
-      title: "Anonymous Sample (Fiction): The Tooth Fairy",
+    title: toothTitle,
       genre: SampleGenre.FICTION,
       text: `He is fifty-three years old when he loses his first tooth. Pacing the aquarium, watching clownfish flit through cloudy water, he feels something wiggling in his mouth. The man is a pediatrician. He knows pain like his own bedroom, the contours and ridges, the rough surfaces. The tooth is off-white in his palm, tinged with blood bright red. He is heading to the parking lot when a woman stops him. She’s shorter than him, but he has always been tall, has learned to understand there is always at least one foot between him and anyone else. Now, the woman holds her hand out, palm small and rivered in lines. She looks at him expectantly, head cocked, dark brown bob turning light in the sun. Her hand is still outstretched, cupped, eyes creased at the edges, smiling like someone kind. He smiles back, glances down at her hand again, slips it into his own. He is startled by the warmth, the pulse of skin, the refreshing clink of coolness from her silver wristband. He squeezes her hand, his thumb tracing the smooth skin, the knuckles and ridges and thin veins disappearing into nothing, like her hand and everything else could disintegrate at any moment. She pulls away, shaking her head, and he steps back instinctively, his face flush. “I’ve come for the tooth,” she says, and her voice is smooth, lilting, as she gestures towards her collarbone. The man sees the name tag, a small white sticker against her bare skin. “You’re the tooth fairy?” He asks and fishes within his pocket, holds the tooth out in his hand. He expects her to have a suitcase, or at least a string bag, to hold all of it, but she simply slips it into the waistband of her leggings. She leaves with a crescent moon smile and without a good-bye, and he drives home with the radio low and the windows down.
 

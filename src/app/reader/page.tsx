@@ -20,19 +20,20 @@ export default function ReaderLanding() {
 
       <div className="mt-8 overflow-hidden rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm">
         <div className="rounded-[23px] border border-zinc-200 bg-white/90 p-6 backdrop-blur">
-          <h2 className="text-lg font-semibold">How to get started</h2>
+          <h2 className="text-lg font-semibold">How it works (for readers)</h2>
           <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
             <li>
-              <span className="font-medium text-[color:var(--ink)]">1)</span>{" "}
-              Write a feedback sample on a short anonymous piece (1–2 pages).
+              <span className="font-medium text-[color:var(--ink)]">Step 1:</span>{" "}
+              Write your one public feedback sample on the anonymous fiction piece <em>The Tooth</em>{" "}
+              (about 1–2 pages).
             </li>
             <li>
-              <span className="font-medium text-[color:var(--ink)]">2)</span>{" "}
-              Start reviewing writer submissions—initially just the first 3 pages.
+              <span className="font-medium text-[color:var(--ink)]">Step 2:</span>{" "}
+              Writers browse your sample and invite you into a critique.
             </li>
             <li>
-              <span className="font-medium text-[color:var(--ink)]">3)</span>{" "}
-              Writers can unlock more pages if your feedback is a fit.
+              <span className="font-medium text-[color:var(--ink)]">Step 3:</span>{" "}
+              You give inline margin notes + a short summary on their first 3 pages.
             </li>
           </ol>
           <p className="mt-4 text-sm text-[color:var(--ink-muted)]">

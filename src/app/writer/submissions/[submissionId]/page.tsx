@@ -1,25 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-
-const DEMO_WRITER_EMAIL = "writer@example.com";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function WriterSubmissionDetailPage({
   params,
 }: {
   params: Promise<{ submissionId: string }>;
 }) {
-  const writer = await db.user.findUnique({ where: { email: DEMO_WRITER_EMAIL } });
-  if (!writer) throw new Error("Demo writer not seeded.");
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) redirect("/auth/sign-in");
 
   const { submissionId } = await params;
 
   const submission = await db.submission.findFirst({
-    where: { id: submissionId, writerId: writer.id },
+    where: { id: submissionId, writerId: userId },
     include: {
       assignments: {
         include: {
-          reader: { include: { readerProfile: { include: { feedbackSample: true } } } },
+          reader: { include: { readerProfile: { include: { feedbackSamples: true } } } },
           feedback: { include: { comments: { orderBy: { createdAt: "asc" } } } },
           tags: true,
         },

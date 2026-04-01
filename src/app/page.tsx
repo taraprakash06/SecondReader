@@ -17,9 +17,9 @@ export default function Home() {
                 className="object-contain object-left"
               />
             </div>
-            <div className="sm:pt-1">
-              <p className="text-sm font-medium text-[color:var(--ink-muted)]">
-                A trust-first critique partner meet-up space
+            <div className="min-w-0 max-w-full overflow-x-auto sm:pt-1">
+              <p className="whitespace-nowrap text-sm font-medium text-[color:var(--ink-muted)]">
+                A digital meet-up space where writers find critique partners and second readers they trust.
               </p>
               <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Second Reader
@@ -93,31 +93,6 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-10 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-          <div className="bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px]">
-            <div className="rounded-[15px] bg-white p-6">
-              <h3 className="text-sm font-semibold">How it works</h3>
-              <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-            <li>
-                <span className="font-medium text-[color:var(--ink)]">Step 1:</span> Share
-              your first 3 pages (or the whole piece if shorter).
-            </li>
-            <li>
-                <span className="font-medium text-[color:var(--ink)]">Step 2:</span> Reader
-              gives inline notes + a short summary.
-            </li>
-            <li>
-                <span className="font-medium text-[color:var(--ink)]">Step 3:</span> You
-              choose to stop or continue (unlock more pages).
-            </li>
-              </ol>
-              <p className="mt-3 text-xs text-[color:var(--ink-muted)]">
-            Writer preferences are guidelines, not constraints—readers use their
-            judgment.
-              </p>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );

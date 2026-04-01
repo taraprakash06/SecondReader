@@ -2,41 +2,37 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { FeedbackSampleComposer } from "@/components/FeedbackSampleComposer";
-import { UserRole } from "@prisma/client";
-import type { SampleGenre } from "@prisma/client";
+import { UserRole, SampleGenre } from "@prisma/client";
+import { auth } from "@/lib/auth";
 
 type DraftComment = { id: string; quote: string; message: string };
 
-const SAMPLE_GENRES = [
-  "FICTION",
-  "PERSONAL_ESSAY_MEMOIR",
-  "POETRY",
-  "LITERARY_NONFICTION",
-  "GENRE_FICTION",
-] as const satisfies readonly SampleGenre[];
+/** Canonical DB title for the fiction onboarding piece (“Tooth”). Legacy DBs may still have the old title. */
+const CANONICAL_TOOTH_TITLE = "Anonymous Sample (Fiction): Tooth";
+const LEGACY_TOOTH_TITLE = "Anonymous Sample (Fiction): The Tooth Fairy";
 
-function isSampleGenre(value: string): value is SampleGenre {
-  return (SAMPLE_GENRES as readonly string[]).includes(value);
-}
+const FICTION_GENRE: SampleGenre = "FICTION";
 
 function normalizeString(input: FormDataEntryValue | null) {
   return String(input ?? "").trim();
 }
 
+async function getToothSamplePiece() {
+  return (
+    (await db.samplePiece.findUnique({ where: { title: CANONICAL_TOOTH_TITLE } })) ??
+    (await db.samplePiece.findUnique({ where: { title: LEGACY_TOOTH_TITLE } }))
+  );
+}
+
 async function saveFeedbackSample(formData: FormData) {
   "use server";
 
-  const email = normalizeString(formData.get("email"));
-  const name = normalizeString(formData.get("name")) || "Reader";
-  const genreRaw = normalizeString(formData.get("genre"));
-  const genre: SampleGenre = isSampleGenre(genreRaw) ? genreRaw : "FICTION";
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Please sign in.");
 
-  if (!email) throw new Error("Email is required.");
-
-  const samplePiece =
-    (await db.samplePiece.findFirst({ where: { genre }, orderBy: { createdAt: "asc" } })) ??
-    (await db.samplePiece.findFirst({ orderBy: { createdAt: "asc" } }));
-  if (!samplePiece) throw new Error("No sample piece exists.");
+  const samplePiece = await getToothSamplePiece();
+  if (!samplePiece) throw new Error("Fiction sample piece is missing from the database.");
 
   const commentsJson = normalizeString(formData.get("commentsJson"));
   const strengths = normalizeString(formData.get("strengths"));
@@ -47,16 +43,10 @@ async function saveFeedbackSample(formData: FormData) {
     (c) => c && typeof c.quote === "string" && typeof c.message === "string",
   );
 
-  const user = await db.user.upsert({
-    where: { email },
-    update: { name, role: UserRole.READER },
-    create: {
-      email,
-      name,
-      role: UserRole.READER,
-      readerProfile: { create: {} },
-    },
-    include: { readerProfile: true },
+  const user = await db.user.update({
+    where: { id: userId },
+    data: { role: UserRole.READER },
+    include: { readerProfile: { include: { feedbackSamples: true } } },
   });
 
   const readerProfile =
@@ -65,11 +55,18 @@ async function saveFeedbackSample(formData: FormData) {
       data: { userId: user.id },
     }));
 
+  const existing = await db.feedbackSample.count({
+    where: { readerProfileId: readerProfile.id },
+  });
+  if (existing > 0) {
+    redirect(`/readers/${user.id}`);
+  }
+
   await db.feedbackSample.create({
     data: {
       readerProfileId: readerProfile.id,
       samplePieceId: samplePiece.id,
-      genre,
+      genre: FICTION_GENRE,
       publicStrengths: strengths,
       publicImprovements: improvements,
       publicKeyTakeaways: keyTakeaways,
@@ -88,24 +85,26 @@ async function saveFeedbackSample(formData: FormData) {
 export default async function ReaderOnboardingPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ genre?: string; email?: string; name?: string }>;
+  searchParams?: Promise<{ email?: string; name?: string }>;
 }) {
-  const sp = (await searchParams) ?? {};
-  const selectedGenre: SampleGenre = isSampleGenre((sp.genre ?? "").trim())
-    ? ((sp.genre ?? "").trim() as SampleGenre)
-    : "FICTION";
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/auth/sign-in");
+  }
 
-  const samplePiece =
-    (await db.samplePiece.findFirst({
-      where: { genre: selectedGenre },
-      orderBy: { createdAt: "asc" },
-    })) ??
-    (await db.samplePiece.findFirst({ orderBy: { createdAt: "asc" } }));
+  const userId = session.user.id;
 
-  const pieces = await db.samplePiece.findMany({
-    select: { genre: true, title: true },
-    orderBy: { createdAt: "asc" },
+  const existingProfile = await db.readerProfile.findUnique({
+    where: { userId },
+    include: { feedbackSamples: { take: 1 } },
   });
+  if (existingProfile && existingProfile.feedbackSamples.length > 0) {
+    redirect(`/readers/${userId}`);
+  }
+
+  const sp = (await searchParams) ?? {};
+
+  const samplePiece = await getToothSamplePiece();
 
   if (!samplePiece) {
     return (
@@ -116,18 +115,12 @@ export default async function ReaderOnboardingPage({
         >
           ← Back
         </Link>
-        <p className="mt-6 text-sm text-[color:var(--ink-muted)]">No sample piece found.</p>
+        <p className="mt-6 text-sm text-[color:var(--ink-muted)]">
+          The fiction sample piece is not configured. Run the database seed.
+        </p>
       </div>
     );
   }
-
-  const genreOptions: Array<{ id: SampleGenre; label: string }> = [
-    { id: "FICTION", label: "Fiction" },
-    { id: "PERSONAL_ESSAY_MEMOIR", label: "Personal essay / memoir" },
-    { id: "POETRY", label: "Poetry" },
-    { id: "LITERARY_NONFICTION", label: "Literary nonfiction" },
-    { id: "GENRE_FICTION", label: "Genre fiction (fantasy, sci-fi, etc.)" },
-  ];
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
@@ -138,10 +131,11 @@ export default async function ReaderOnboardingPage({
         >
           ← Reader space
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight">Create your feedback sample</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Your feedback sample</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-          Write a thoughtful critique on this short anonymous piece. Your inline notes + summary
-          become your public sample so writers can see your style before they invite you in.
+          Write a thoughtful critique on this short anonymous fiction piece (<em>The Tooth</em>). Your
+          inline notes and summary become your public sample so writers can see your style before they
+          invite you in. Each reader completes one sample.
         </p>
       </div>
 
@@ -169,36 +163,20 @@ export default async function ReaderOnboardingPage({
             </label>
           </div>
 
-          <div className="mt-6">
-            <p className="text-xs font-semibold text-[color:var(--ink-muted)]">
-              Anonymous piece: <span className="text-[color:var(--ink)]">{samplePiece.title}</span>
+          <div className="mt-6 rounded-xl border border-zinc-200 bg-[color:var(--paper-2)] p-4">
+            <p className="text-xs font-semibold text-[color:var(--ink)]">Piece you’re reviewing</p>
+            <p className="mt-1 text-sm text-[color:var(--ink)]">
+              <span className="font-medium">Fiction</span> — <em>Tooth</em>
             </p>
-            <div className="mt-3 grid gap-2 md:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-[color:var(--ink)]">Genre</span>
-                <select
-                  name="genre"
-                  defaultValue={selectedGenre}
-                  className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
-                >
-                  {genreOptions.map((g) => {
-                    const title = pieces.find((p) => p.genre === g.id)?.title;
-                    return (
-                      <option key={g.id} value={g.id}>
-                        {g.label}
-                        {title ? ` — ${title}` : ""}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
-              <div className="rounded-xl border border-zinc-200 bg-[color:var(--paper-2)] p-3 text-xs text-[color:var(--ink-muted)]">
-                Pick a genre you like to read. You can add more samples later.
-              </div>
-            </div>
+            <p className="mt-2 text-xs text-[color:var(--ink-muted)]">
+              This is the only public sample piece for readers right now.
+            </p>
           </div>
 
           <FeedbackSampleComposer sampleText={samplePiece.text} defaultMode="comment" />
+
+          <input type="hidden" name="genre" value={FICTION_GENRE} />
+          <input type="hidden" name="sampleTitle" value={samplePiece.title} />
 
           <div className="mt-6 flex items-center justify-end">
             <button className="h-10 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95">
@@ -210,4 +188,3 @@ export default async function ReaderOnboardingPage({
     </div>
   );
 }
-

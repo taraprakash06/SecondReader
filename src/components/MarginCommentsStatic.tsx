@@ -1,21 +1,19 @@
-"use client";
-
 import React from "react";
-import { annotateParagraphs, inferCommentKind, type MarginComment } from "@/lib/margin-comments";
+import {
+  annotateParagraphs,
+  inferCommentKind,
+  type MarginComment,
+} from "@/lib/margin-comments";
 import { renderWithHighlights } from "@/lib/margin-comments-render";
 
-export type { MarginComment };
-
-function MarginCard({
+function MarginCardDisplay({
   comment,
   readerName,
   readerInitial,
-  onRemove,
 }: {
   comment: MarginComment;
   readerName: string;
   readerInitial: string;
-  onRemove?: () => void;
 }) {
   const isSuggestion = inferCommentKind(comment.message) === "suggest";
   const kind = isSuggestion ? "Suggestion" : "Comment";
@@ -29,20 +27,9 @@ function MarginCard({
           {readerInitial.slice(0, 1).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0">
-            <div className="flex flex-wrap items-baseline gap-x-2">
-              <span className="text-sm font-semibold text-zinc-900">{readerName}</span>
-              <span className="text-[11px] text-zinc-500">Just now</span>
-            </div>
-            {onRemove ? (
-              <button
-                type="button"
-                onClick={onRemove}
-                className="text-[11px] font-semibold text-rose-600 hover:text-rose-800"
-              >
-                Remove
-              </button>
-            ) : null}
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <span className="text-sm font-semibold text-zinc-900">{readerName}</span>
+            <span className="text-[11px] text-zinc-500">Just now</span>
           </div>
           <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-800/80">
             {kind}
@@ -56,18 +43,19 @@ function MarginCard({
   );
 }
 
-export function InlineMarginComments({
+/**
+ * Server-rendered margin layout for public profiles (no client JS, no hydration mismatch for this subtree).
+ */
+export function MarginCommentsStatic({
   text,
   comments,
   readerName = "Reader",
   readerInitial,
-  onRemoveComment,
 }: {
   text: string;
   comments: MarginComment[];
   readerName?: string;
   readerInitial?: string;
-  onRemoveComment?: (id: string) => void;
 }) {
   const paragraphs = annotateParagraphs(text, comments);
   const initial =
@@ -103,13 +91,10 @@ export function InlineMarginComments({
                       className="pointer-events-none absolute -left-2 top-4 hidden h-px w-2 bg-zinc-300 md:block"
                       aria-hidden
                     />
-                    <MarginCard
+                    <MarginCardDisplay
                       comment={a.comment}
                       readerName={readerName}
                       readerInitial={initial}
-                      onRemove={
-                        onRemoveComment ? () => onRemoveComment(a.comment.id) : undefined
-                      }
                     />
                   </div>
                 ))

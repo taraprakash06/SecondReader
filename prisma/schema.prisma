@@ -68,7 +68,12 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
+  bio       String   @default("")
   role      UserRole @default(WRITER)
+  passwordHash String?
+  writeGenres String @default("") // comma-separated for MVP
+  readGenres  String @default("") // comma-separated for MVP
+  onboarded   Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -76,6 +81,48 @@ model User {
 
   submissions Submission[]         @relation("WriterSubmissions")
   assignments CritiqueAssignment[] @relation("ReaderAssignments")
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model ReaderProfile {

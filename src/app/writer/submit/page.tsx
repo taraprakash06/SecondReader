@@ -2,8 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { DraftStage, FeedbackFocus, FeedbackTonePreference } from "@prisma/client";
-
-const DEMO_WRITER_EMAIL = "writer@example.com";
+import { auth } from "@/lib/auth";
 
 function clampInitialPages(text: string) {
   const normalized = text.replace(/\r\n/g, "\n").trim();
@@ -18,8 +17,12 @@ function clampInitialPages(text: string) {
 async function createSubmission(formData: FormData) {
   "use server";
 
-  const writer = await db.user.findUnique({ where: { email: DEMO_WRITER_EMAIL } });
-  if (!writer) throw new Error("Demo writer not seeded.");
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Please sign in.");
+
+  const writer = await db.user.findUnique({ where: { id: userId } });
+  if (!writer) throw new Error("User not found.");
 
   const title = String(formData.get("title") ?? "").trim();
   const genre = String(formData.get("genre") ?? "").trim();

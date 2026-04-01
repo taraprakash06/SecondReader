@@ -14,6 +14,31 @@ export default function WriterLanding() {
         </p>
       </div>
 
+      <div className="mt-8 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        <div className="bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px]">
+          <div className="rounded-[15px] bg-white p-6">
+            <h2 className="text-sm font-semibold">How it works (for writers)</h2>
+            <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
+              <li>
+                <span className="font-medium text-[color:var(--ink)]">Step 1:</span> Share your first 3 pages (or the
+                whole piece if shorter).
+              </li>
+              <li>
+                <span className="font-medium text-[color:var(--ink)]">Step 2:</span> A reader gives inline margin notes
+                + a short summary.
+              </li>
+              <li>
+                <span className="font-medium text-[color:var(--ink)]">Step 3:</span> You choose to stop or continue
+                (unlock more pages).
+              </li>
+            </ol>
+            <p className="mt-3 text-xs text-[color:var(--ink-muted)]">
+              Writer preferences are guidelines, not constraints—readers use their judgment.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link
           className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)]"
