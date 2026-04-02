@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
-import { updateProfileBioAction } from "@/app/profile/actions";
+import { updateProfileBioAction, updateReaderPublicBlurbsAction } from "@/app/profile/actions";
 
 function genreLabel(genre: string) {
   return genre.replaceAll("_", " ").toLowerCase();
@@ -46,6 +46,10 @@ export default async function ProfilePage() {
   /** Readers have one public sample (fiction / The Tooth). Legacy rows may exist; show the latest only. */
   const readerSamples = samples.slice(0, 1);
   const submissions = user.submissions;
+  const rp = user.readerProfile;
+  const readerGenres = rp?.genres ?? "";
+  const readerCaresAbout = rp?.caresAbout ?? "";
+  const readerPhilosophy = rp?.feedbackPhilosophy ?? "";
 
   const showReaderSection =
     user.role === "READER" || user.role === "BOTH" || samples.length > 0;
@@ -119,8 +123,7 @@ export default async function ProfilePage() {
             <div>
               <h2 className="text-lg font-semibold">As a reader</h2>
               <p className="text-sm text-[color:var(--ink-muted)]">
-                Your public fiction feedback sample (readers complete one sample on <em>The Tooth</em>
-                ).
+                What writers see when they browse readers, then your public feedback sample.
               </p>
             </div>
             {readerSamples.length > 0 ? (
@@ -132,6 +135,75 @@ export default async function ProfilePage() {
               </Link>
             ) : null}
           </div>
+
+          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur">
+            <h3 className="text-2xl font-semibold tracking-tight text-[color:var(--ink)]">{user.name}</h3>
+            <dl className="mt-4 space-y-2 text-sm">
+              <div>
+                <dt className="inline font-medium text-[color:var(--ink)]">Genres:</dt>{" "}
+                <dd className="inline text-[color:var(--ink-muted)]">
+                  {readerGenres.trim() ? readerGenres : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="inline font-medium text-[color:var(--ink)]">Cares about:</dt>{" "}
+                <dd className="inline text-[color:var(--ink-muted)]">
+                  {readerCaresAbout.trim() ? readerCaresAbout : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="inline font-medium text-[color:var(--ink)]">Philosophy:</dt>{" "}
+                <dd className="inline text-[color:var(--ink-muted)]">
+                  {readerPhilosophy.trim() ? readerPhilosophy : "—"}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <form action={updateReaderPublicBlurbsAction} className="mt-6 rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur">
+            <p className="text-sm font-medium text-[color:var(--ink)]">Edit browse profile</p>
+            <p className="mt-1 text-xs text-[color:var(--ink-muted)]">
+              Shown on Browse Readers and at the top of your public reader page.
+            </p>
+            <div className="mt-4 space-y-4">
+              <label className="grid gap-1 text-sm">
+                <span className="font-medium text-[color:var(--ink)]">Genres</span>
+                <input
+                  name="genres"
+                  type="text"
+                  defaultValue={readerGenres}
+                  placeholder="e.g. Literary fiction, poetry, memoir"
+                  className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-[color:var(--ink)] focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+                />
+              </label>
+              <label className="grid gap-1 text-sm">
+                <span className="font-medium text-[color:var(--ink)]">Cares about</span>
+                <textarea
+                  name="caresAbout"
+                  rows={3}
+                  defaultValue={readerCaresAbout}
+                  placeholder="What you value in a piece and in feedback relationships."
+                  className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-[color:var(--ink)] focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+                />
+              </label>
+              <label className="grid gap-1 text-sm">
+                <span className="font-medium text-[color:var(--ink)]">Philosophy</span>
+                <textarea
+                  name="feedbackPhilosophy"
+                  rows={3}
+                  defaultValue={readerPhilosophy}
+                  placeholder="How you like to give feedback (tone, structure, priorities)."
+                  className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-[color:var(--ink)] focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+                />
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="mt-4 inline-flex h-9 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-xs font-semibold text-white shadow-sm hover:opacity-95"
+            >
+              Save reader info
+            </button>
+          </form>
 
           {readerSamples.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-zinc-200 bg-white/90 p-6 text-sm text-[color:var(--ink-muted)]">

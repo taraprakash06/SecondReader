@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { AuthButton } from "@/components/AuthButton";
+import { NotificationsLink } from "@/components/NotificationsLink";
 import { Providers } from "@/app/providers";
 
 const geistSans = Geist({
@@ -52,22 +53,29 @@ export default async function RootLayout({
               <nav className="flex items-center gap-2">
                 <Link
                   className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
+                  href="/pieces"
+                >
+                  Browse Pieces
+                </Link>
+                <Link
+                  className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
                   href="/readers"
                 >
-                  Readers
+                  Browse Readers
                 </Link>
                 <Link
-                  className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
+                  className="hidden min-h-9 max-w-[5.75rem] items-center justify-center rounded-xl px-2 text-center text-[10px] font-semibold leading-tight text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex sm:max-w-none sm:px-3 sm:text-xs sm:leading-snug"
                   href="/writer"
                 >
-                  Writer
+                  Submit Your Work
                 </Link>
                 <Link
-                  className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
+                  className="hidden min-h-9 max-w-[6.25rem] items-center justify-center rounded-xl px-2 text-center text-[10px] font-semibold leading-tight text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex sm:max-w-none sm:px-3 sm:text-xs sm:leading-snug"
                   href="/reader"
                 >
-                  Reader
+                  Submit Feedback Sample
                 </Link>
+                <NotificationsLink />
                 <AuthButton />
               </nav>
             </div>

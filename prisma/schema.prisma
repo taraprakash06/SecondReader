@@ -27,6 +27,23 @@ enum FeedbackFocus {
   OTHER
 }
 
+/// Writer-selected focus areas on submit (up to 5). Stored as JSON array on Submission.writerFocusAreas.
+enum WriterFocusArea {
+  BIG_PICTURE_OVERALL
+  STRUCTURE_PACING
+  CLARITY_FLOW
+  CHARACTER_VOICE
+  EMOTIONAL_IMPACT
+  LINE_LEVEL_WRITING
+  DIALOGUE
+  OPENING_FIRST_PAGES
+  ENDING
+  PLACES_WORKING_WELL
+  PLACES_CONFUSION
+  PLACES_UNNECESSARY
+  OTHER
+}
+
 enum FeedbackTonePreference {
   GENTLE
   BALANCED
@@ -44,6 +61,18 @@ enum CritiqueStatus {
   ACTIVE
   STOPPED
   COMPLETED
+}
+
+enum ReaderInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum ReaderVolunteerStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }
 
 enum ReputationTag {
@@ -81,6 +110,12 @@ model User {
 
   submissions Submission[]         @relation("WriterSubmissions")
   assignments CritiqueAssignment[] @relation("ReaderAssignments")
+
+  readerInvitesReceived ReaderInvite[] @relation("ReaderInvitesReceived")
+  readerInvitesSent     ReaderInvite[] @relation("ReaderInvitesSent")
+  volunteerRequestsAsReader ReaderVolunteerRequest[] @relation("VolunteerReader")
+  volunteerRequestsForWriter ReaderVolunteerRequest[] @relation("VolunteerWriter")
+  notifications         Notification[]
 
   accounts Account[]
   sessions Session[]
@@ -148,11 +183,17 @@ model Submission {
   subgenre     String        @default("")
   wordCount    Int
   stage        DraftStage
+  /// JSON array of WriterFocusArea values (1–5 items).
+  writerFocusAreas String @default("[]")
   focus1       FeedbackFocus
   focus2       FeedbackFocus?
   focusOther   String        @default("")
   tonePref     FeedbackTonePreference
   notHelpful   String        @default("")
+  /// Optional short note shown on Browse Pieces (e.g. worries, context for volunteers).
+  writerBrowseNote String   @default("")
+  /// When false, the piece is hidden from Browse Pieces and volunteers cannot request.
+  requestsOpen Boolean       @default(true)
   initialPages String        // gated content (<= ~3 pages)
   fullText     String        @default("") // optional: additional pages unlocked later
   createdAt    DateTime      @default(now())
@@ -160,6 +201,8 @@ model Submission {
 
   writer      User                @relation("WriterSubmissions", fields: [writerId], references: [id], onDelete: Cascade)
   assignments CritiqueAssignment[]
+  invites     ReaderInvite[]
+  volunteerRequests ReaderVolunteerRequest[]
 }
 
 model CritiqueAssignment {
@@ -168,6 +211,8 @@ model CritiqueAssignment {
   readerId      String
   status        CritiqueStatus @default(ACTIVE)
   unlockedPages Int            @default(3)
+  /// When true, the reader may read `Submission.fullText` in addition to initial pages.
+  readerSeesFullPiece Boolean  @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -179,6 +224,62 @@ model CritiqueAssignment {
 
   @@unique([submissionId, readerId])
   @@index([readerId, status])
+}
+
+model ReaderInvite {
+  id           String             @id @default(cuid())
+  submissionId String
+  readerId     String
+  writerId     String
+  status       ReaderInviteStatus @default(PENDING)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  submission   Submission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reader       User          @relation("ReaderInvitesReceived", fields: [readerId], references: [id], onDelete: Cascade)
+  writer       User          @relation("ReaderInvitesSent", fields: [writerId], references: [id], onDelete: Cascade)
+  notification Notification?
+
+  @@unique([submissionId, readerId])
+  @@index([readerId, status])
+}
+
+model ReaderVolunteerRequest {
+  id           String               @id @default(cuid())
+  submissionId String
+  readerId     String
+  writerId     String
+  status       ReaderVolunteerStatus @default(PENDING)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reader     User       @relation("VolunteerReader", fields: [readerId], references: [id], onDelete: Cascade)
+  writer     User       @relation("VolunteerWriter", fields: [writerId], references: [id], onDelete: Cascade)
+  notification Notification?
+
+  @@unique([submissionId, readerId])
+  @@index([writerId, status])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  inviteId  String?  @unique
+  volunteerRequestId String? @unique
+  /// Set when a volunteer request is accepted so the reader can open /critiques/[id].
+  relatedAssignmentId String?
+  createdAt DateTime @default(now())
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invite ReaderInvite? @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  volunteerRequest ReaderVolunteerRequest? @relation(fields: [volunteerRequestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
 }
 
 model CritiqueFeedback {

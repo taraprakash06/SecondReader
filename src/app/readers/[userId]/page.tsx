@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
+import { InviteReaderForm } from "@/app/readers/[userId]/InviteReaderForm";
 
 export default async function ReaderProfilePage({
   params,
@@ -9,6 +11,17 @@ export default async function ReaderProfilePage({
   params: Promise<{ userId: string }>;
 }) {
   const { userId } = await params;
+  const session = await auth();
+  const isSelf = session?.user?.id === userId;
+
+  const writerSubmissions =
+    session?.user?.id && !isSelf
+      ? await db.submission.findMany({
+          where: { writerId: session.user.id },
+          orderBy: { createdAt: "desc" },
+          select: { id: true, title: true },
+        })
+      : [];
 
   const profile = await db.readerProfile.findUnique({
     where: { userId },
@@ -32,23 +45,33 @@ export default async function ReaderProfilePage({
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
           href="/readers"
         >
-          ← Back to readers
+          ← Browse readers
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">{profile.user.name}</h1>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          <span className="font-medium text-[color:var(--ink)]">Writing background:</span>{" "}
-          {profile.writingBackground || "—"}
-        </p>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          <span className="font-medium text-[color:var(--ink)]">Genres:</span> {profile.genres || "—"}
-        </p>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          <span className="font-medium text-[color:var(--ink)]">Cares about:</span> {profile.caresAbout || "—"}
-        </p>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          <span className="font-medium text-[color:var(--ink)]">Philosophy of feedback:</span>{" "}
-          {profile.feedbackPhilosophy || "—"}
-        </p>
+        <dl className="mt-4 space-y-2 text-sm">
+          <div>
+            <dt className="inline font-medium text-[color:var(--ink)]">Genres:</dt>{" "}
+            <dd className="inline text-[color:var(--ink-muted)]">{profile.genres.trim() ? profile.genres : "—"}</dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-[color:var(--ink)]">Cares about:</dt>{" "}
+            <dd className="inline text-[color:var(--ink-muted)]">
+              {profile.caresAbout.trim() ? profile.caresAbout : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-[color:var(--ink)]">Philosophy:</dt>{" "}
+            <dd className="inline text-[color:var(--ink-muted)]">
+              {profile.feedbackPhilosophy.trim() ? profile.feedbackPhilosophy : "—"}
+            </dd>
+          </div>
+        </dl>
+        {profile.writingBackground.trim() ? (
+          <p className="mt-4 text-sm text-[color:var(--ink-muted)]">
+            <span className="font-medium text-[color:var(--ink)]">Writing background:</span>{" "}
+            {profile.writingBackground}
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-8 overflow-visible rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm">
@@ -97,6 +120,29 @@ export default async function ReaderProfilePage({
         </div>
         </div>
       </div>
+
+      {!isSelf ? (
+        <section className="mt-10 rounded-3xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur">
+          <h2 className="text-lg font-semibold text-[color:var(--ink)]">Ask for feedback</h2>
+          <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
+            After you’ve read their sample, choose a piece you’ve submitted and send an invite. They’ll
+            get a notification and can accept or decline.
+          </p>
+          {session?.user?.id ? (
+            <InviteReaderForm readerUserId={userId} submissions={writerSubmissions} />
+          ) : (
+            <p className="mt-4 text-sm text-[color:var(--ink-muted)]">
+              <Link
+                className="font-semibold text-[color:var(--brand-magenta)] hover:underline"
+                href={`/auth/sign-in?callbackUrl=${encodeURIComponent(`/readers/${userId}`)}`}
+              >
+                Sign in
+              </Link>{" "}
+              as a writer to invite this reader.
+            </p>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

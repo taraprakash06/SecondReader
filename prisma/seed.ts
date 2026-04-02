@@ -1,4 +1,5 @@
 import { PrismaClient, ReaderAgeCategory, SampleGenre, UserRole } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 const db = new PrismaClient();
 
@@ -13,7 +14,7 @@ async function main() {
     where: { title: toothTitle },
     update: { genre: SampleGenre.FICTION },
     create: {
-    title: toothTitle,
+      title: toothTitle,
       genre: SampleGenre.FICTION,
       text: `He is fifty-three years old when he loses his first tooth. Pacing the aquarium, watching clownfish flit through cloudy water, he feels something wiggling in his mouth. The man is a pediatrician. He knows pain like his own bedroom, the contours and ridges, the rough surfaces. The tooth is off-white in his palm, tinged with blood bright red. He is heading to the parking lot when a woman stops him. She’s shorter than him, but he has always been tall, has learned to understand there is always at least one foot between him and anyone else. Now, the woman holds her hand out, palm small and rivered in lines. She looks at him expectantly, head cocked, dark brown bob turning light in the sun. Her hand is still outstretched, cupped, eyes creased at the edges, smiling like someone kind. He smiles back, glances down at her hand again, slips it into his own. He is startled by the warmth, the pulse of skin, the refreshing clink of coolness from her silver wristband. He squeezes her hand, his thumb tracing the smooth skin, the knuckles and ridges and thin veins disappearing into nothing, like her hand and everything else could disintegrate at any moment. She pulls away, shaking her head, and he steps back instinctively, his face flush. “I’ve come for the tooth,” she says, and her voice is smooth, lilting, as she gestures towards her collarbone. The man sees the name tag, a small white sticker against her bare skin. “You’re the tooth fairy?” He asks and fishes within his pocket, holds the tooth out in his hand. He expects her to have a suitcase, or at least a string bag, to hold all of it, but she simply slips it into the waistband of her leggings. She leaves with a crescent moon smile and without a good-bye, and he drives home with the radio low and the windows down.
 
@@ -111,13 +112,24 @@ It didn’t hurt much in the moment. Only seconds later did he register the pain
     },
   });
 
-  const readerA = await db.user.upsert({
-    where: { email: "reader.a@example.com" },
-    update: { role: UserRole.READER },
-    create: {
-      email: "reader.a@example.com",
-      name: "Reader A",
+  await db.user.deleteMany({
+    where: { email: { in: ["reader.a@example.com", "reader.b@example.com"] } },
+  });
+
+  const taraPassword = await hash("password123", 12);
+
+  await db.user.upsert({
+    where: { email: "tara.prakash@example.com" },
+    update: {
+      name: "Tara Prakash",
       role: UserRole.READER,
+      passwordHash: taraPassword,
+    },
+    create: {
+      email: "tara.prakash@example.com",
+      name: "Tara Prakash",
+      role: UserRole.READER,
+      passwordHash: taraPassword,
       readerProfile: {
         create: {
           ageCategory: ReaderAgeCategory.ADULT,
@@ -156,48 +168,6 @@ It didn’t hurt much in the moment. Only seconds later did he register the pain
         },
       },
     },
-    include: { readerProfile: true },
-  });
-
-  const readerB = await db.user.upsert({
-    where: { email: "reader.b@example.com" },
-    update: { role: UserRole.READER },
-    create: {
-      email: "reader.b@example.com",
-      name: "Reader B",
-      role: UserRole.READER,
-      readerProfile: {
-        create: {
-          ageCategory: ReaderAgeCategory.SENIOR,
-          writingBackground: "Poetry workshops; small press chapbook.",
-          genres: "Poetry,Literary Fiction",
-          caresAbout: "Line music, compression, and pacing between beats.",
-          feedbackPhilosophy:
-            "I focus on rhythm and precision at the line level, and I’ll ask questions when intent isn’t landing.",
-          feedbackSamples: {
-            create: [
-              {
-                samplePieceId: fictionSample.id,
-                genre: SampleGenre.FICTION,
-                publicStrengths: "Strong cadence; crisp sensory setup; curiosity maintained.",
-                publicImprovements: "Reduce generalities; make the final image more specific.",
-                publicKeyTakeaways: "When you replace abstractions with specifics, the piece lifts.",
-                comments: {
-                  create: [
-                    {
-                      quote: "it looked like a held breath.",
-                      message:
-                        "The rhythm works. If you swap 'looked' for a stronger verb, the line gains pressure.",
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-    },
-    include: { readerProfile: true },
   });
 
   await db.user.upsert({
@@ -218,8 +188,7 @@ It didn’t hurt much in the moment. Only seconds later did he register the pain
       literaryNonfiction: litNonfictionSample.id,
       genreFiction: genreFictionSample.id,
     },
-    readerA: readerA.id,
-    readerB: readerB.id,
+    browseReader: "tara.prakash@example.com",
   });
 }
 
@@ -231,4 +200,3 @@ main()
   .finally(async () => {
     await db.$disconnect();
   });
-
