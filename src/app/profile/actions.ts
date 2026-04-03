@@ -61,3 +61,27 @@ export async function updateReaderPublicBlurbsAction(formData: FormData) {
   revalidatePath("/readers");
   revalidatePath(`/readers/${userId}`);
 }
+
+const submissionIdSchema = z.string().cuid();
+
+export async function deleteSubmissionAction(formData: FormData) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) redirect("/auth/sign-in");
+
+  const submissionId = submissionIdSchema.parse(String(formData.get("submissionId") ?? ""));
+
+  const submission = await db.submission.findUnique({
+    where: { id: submissionId },
+    select: { writerId: true },
+  });
+  if (!submission || submission.writerId !== userId) {
+    throw new Error("Submission not found.");
+  }
+
+  await db.submission.delete({ where: { id: submissionId } });
+
+  revalidatePath("/profile");
+  revalidatePath("/pieces");
+  revalidatePath("/notifications");
+}

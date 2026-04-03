@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
+import { DeleteSubmissionButton } from "@/app/profile/DeleteSubmissionButton";
 import { updateProfileBioAction, updateReaderPublicBlurbsAction } from "@/app/profile/actions";
 
 function genreLabel(genre: string) {
@@ -289,10 +290,13 @@ export default async function ProfilePage() {
           ) : (
             <ul className="mt-4 space-y-3">
               {submissions.map((sub) => (
-                <li key={sub.id}>
+                <li
+                  key={sub.id}
+                  className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
                   <Link
                     href={`/writer/submissions/${sub.id}`}
-                    className="block rounded-2xl border border-zinc-200 bg-white/90 p-4 transition hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)]"
+                    className="min-w-0 flex-1 transition hover:opacity-90"
                   >
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                       <div>
@@ -302,7 +306,7 @@ export default async function ProfilePage() {
                           {sub.subgenre ? ` · ${sub.subgenre}` : ""} · {sub.wordCount} words
                         </p>
                       </div>
-                      <p className="text-xs text-[color:var(--ink-muted)]">
+                      <p className="text-xs text-[color:var(--ink-muted)] sm:text-right">
                         {sub.createdAt.toLocaleDateString(undefined, {
                           year: "numeric",
                           month: "short",
@@ -314,6 +318,7 @@ export default async function ProfilePage() {
                       Open submission →
                     </p>
                   </Link>
+                  <DeleteSubmissionButton submissionId={sub.id} />
                 </li>
               ))}
             </ul>
