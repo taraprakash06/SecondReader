@@ -1,26 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { PrismaClient } from "@prisma/client";
 
-/**
- * When `.env` uses `file:./dev.db`, force the real file to `prisma/dev.db` (absolute URL).
- * A duplicate `dev.db` at the repo root is easy to open by mistake and causes schema drift / 500s.
- */
-function resolveSqliteUrl(): void {
-  const url = process.env.DATABASE_URL;
-  if (!url?.startsWith("file:")) return;
-  if (url !== "file:./dev.db" && url !== "file:dev.db") return;
-
-  const prismaDb = path.join(process.cwd(), "prisma", "dev.db");
-  const target = fs.existsSync(prismaDb) ? prismaDb : path.join(process.cwd(), "dev.db");
-  process.env.DATABASE_URL = pathToFileURL(target).href;
-}
-
-resolveSqliteUrl();
-
 /** Increment when Prisma schema changes in ways that make an old `PrismaClient` throw validation errors. */
-const PRISMA_SINGLETON_VERSION = 3;
+const PRISMA_SINGLETON_VERSION = 4;
 
 declare global {
   // eslint-disable-next-line no-var
