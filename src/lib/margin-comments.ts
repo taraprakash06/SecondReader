@@ -45,10 +45,15 @@ export function annotateParagraphs(text: string, comments: MarginComment[]): Par
 
   if (usable.length === 0) return paragraphs;
 
+  /** One highlight per comment id for the whole piece (not once per paragraph). */
+  const placedCommentIds = new Set<string>();
+
   for (const para of paragraphs) {
     const occupied: Array<{ start: number; end: number }> = [];
 
     for (const c of usable) {
+      if (placedCommentIds.has(c.id)) continue;
+
       const re = new RegExp(escapeRegExp(c.quote), "g");
       let match: RegExpExecArray | null;
       // eslint-disable-next-line no-cond-assign
@@ -58,6 +63,7 @@ export function annotateParagraphs(text: string, comments: MarginComment[]): Par
         const overlaps = occupied.some((o) => !(end <= o.start || start >= o.end));
         if (!overlaps) {
           occupied.push({ start, end });
+          placedCommentIds.add(c.id);
           para.annotations.push({
             start,
             end,

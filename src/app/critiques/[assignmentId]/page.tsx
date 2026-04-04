@@ -3,7 +3,10 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { SubmissionInitialPagesBody } from "@/components/SubmissionInitialPagesBody";
+import { CritiqueFeedbackComposer } from "@/components/CritiqueFeedbackComposer";
+import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
 import { submitCritiqueFeedback, unlockFullPieceForReader } from "@/app/critiques/actions";
+import { combinedDraftForMarginAnnotation } from "@/lib/submissionMarginText";
 
 export default async function CritiquePage({
   params,
@@ -34,6 +37,18 @@ export default async function CritiquePage({
   const canSeeFull =
     isWriter || (isReader && assignment.readerSeesFullPiece && sub.fullText.trim().length > 0);
 
+  const marginAnnotationText = combinedDraftForMarginAnnotation(sub.initialPages, {
+    includeFullText: assignment.readerSeesFullPiece && sub.fullText.trim().length > 0,
+    fullText: sub.fullText,
+  });
+
+  const defaultMarginComments =
+    assignment.feedback?.comments.map((c) => ({
+      id: c.id,
+      quote: c.quote,
+      message: c.message,
+    })) ?? [];
+
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
       <div className="flex flex-col gap-2">
@@ -55,6 +70,12 @@ export default async function CritiquePage({
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-sm font-semibold text-zinc-900">Shared draft</h2>
           <p className="mt-1 text-xs text-zinc-600">Initial pages the writer chose to share first.</p>
+          {isReader ? (
+            <p className="mt-2 text-xs text-zinc-500">
+              Use the <span className="font-medium text-zinc-700">Margin notes</span> panel on the right to select
+              phrases—the plain excerpt there matches this draft.
+            </p>
+          ) : null}
           <div className="mt-4">
             <SubmissionInitialPagesBody content={sub.initialPages} />
           </div>
@@ -79,38 +100,18 @@ export default async function CritiquePage({
         <section className="space-y-6">
           {isReader ? (
             <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-zinc-900">Your feedback summary</h2>
+              <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
               <p className="mt-1 text-xs text-zinc-600">
-                Margin notes can come later—share strengths, improvements, and takeaways for now.
+                Add inline margin notes on the excerpt and your overall summary—save when you’re ready.
               </p>
-              <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-4 space-y-3">
-                <label className="grid gap-1 text-sm">
-                  <span className="font-medium text-zinc-800">Strengths</span>
-                  <textarea
-                    name="strengths"
-                    rows={3}
-                    defaultValue={assignment.feedback?.strengths ?? ""}
-                    className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
-                  />
-                </label>
-                <label className="grid gap-1 text-sm">
-                  <span className="font-medium text-zinc-800">Areas for improvement</span>
-                  <textarea
-                    name="improvements"
-                    rows={3}
-                    defaultValue={assignment.feedback?.improvements ?? ""}
-                    className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
-                  />
-                </label>
-                <label className="grid gap-1 text-sm">
-                  <span className="font-medium text-zinc-800">Key takeaways</span>
-                  <textarea
-                    name="keyTakeaways"
-                    rows={3}
-                    defaultValue={assignment.feedback?.keyTakeaways ?? ""}
-                    className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
-                  />
-                </label>
+              <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-4 space-y-6">
+                <CritiqueFeedbackComposer
+                  draftPlainForMargins={marginAnnotationText}
+                  defaultStrengths={assignment.feedback?.strengths ?? ""}
+                  defaultImprovements={assignment.feedback?.improvements ?? ""}
+                  defaultKeyTakeaways={assignment.feedback?.keyTakeaways ?? ""}
+                  defaultComments={defaultMarginComments}
+                />
                 <button
                   type="submit"
                   className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
@@ -125,18 +126,40 @@ export default async function CritiquePage({
             <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
               <h2 className="text-sm font-semibold text-zinc-900">Reader response</h2>
               {assignment.feedback ? (
-                <div className="mt-3 space-y-3 text-sm text-zinc-700">
-                  <div>
-                    <p className="font-medium text-zinc-900">Strengths</p>
-                    <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.strengths || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-900">Areas for improvement</p>
-                    <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.improvements || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-900">Key takeaways</p>
-                    <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.keyTakeaways || "—"}</p>
+                <div className="mt-3 space-y-6">
+                  {assignment.feedback.comments.length > 0 ? (
+                    <div>
+                      <h3 className="text-sm font-semibold text-zinc-900">Margin notes</h3>
+                      <p className="mt-1 text-xs text-zinc-600">
+                        Inline comments from {assignment.reader.name} on the same plain-text excerpt they used when
+                        writing feedback.
+                      </p>
+                      <div className="mt-3 overflow-hidden rounded-2xl border border-zinc-200">
+                        <MarginCommentsStatic
+                          text={marginAnnotationText}
+                          comments={assignment.feedback.comments.map((c) => ({
+                            id: c.id,
+                            quote: c.quote,
+                            message: c.message,
+                          }))}
+                          readerName={assignment.reader.name ?? "Reader"}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="space-y-3 text-sm text-zinc-700">
+                    <div>
+                      <p className="font-medium text-zinc-900">Strengths</p>
+                      <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.strengths || "—"}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-900">Areas for improvement</p>
+                      <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.improvements || "—"}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-900">Key takeaways</p>
+                      <p className="mt-1 whitespace-pre-wrap">{assignment.feedback.keyTakeaways || "—"}</p>
+                    </div>
                   </div>
                 </div>
               ) : (

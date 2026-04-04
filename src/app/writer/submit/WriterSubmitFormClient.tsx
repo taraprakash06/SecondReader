@@ -1,9 +1,37 @@
 "use client";
 
+import { useFormStatus } from "react-dom";
 import { WriterFocusAreasField } from "@/components/WriterFocusAreasField";
 import { WriterSubmitFormShell } from "@/components/WriterSubmitFormShell";
 import { RichTextInitialPagesField } from "@/components/RichTextInitialPagesField";
 import { createSubmission } from "./actions";
+
+function CreateSubmissionButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-busy={pending}
+      className={`inline-flex h-10 min-w-[11rem] items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-medium text-white shadow-sm ${
+        pending ? "cursor-wait opacity-95" : "hover:opacity-95"
+      }`}
+    >
+      {pending ? (
+        <>
+          <span
+            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+            aria-hidden
+          />
+          Submitting…
+        </>
+      ) : (
+        "Create submission"
+      )}
+    </button>
+  );
+}
 
 const STAGE_OPTIONS = [
   { id: "EARLY_DRAFT", label: "Early draft" },
@@ -119,13 +147,11 @@ export function WriterSubmitFormClient() {
           </p>
         </div>
 
-        <div className="flex items-center justify-end">
-          <button
-            type="submit"
-            className="h-10 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-medium text-white shadow-sm hover:opacity-95"
-          >
-            Create submission
-          </button>
+        <div className="flex flex-col items-end gap-2">
+          <p className="max-w-md text-right text-xs text-[color:var(--ink-muted)]">
+            Wait for the redirect after you submit—no need to click again.
+          </p>
+          <CreateSubmissionButton />
         </div>
       </div>
     </WriterSubmitFormShell>

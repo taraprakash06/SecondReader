@@ -58,5 +58,5 @@ export async function createSubmission(formData: FormData) {
     },
   });
 
-  redirect(`/writer/submissions/${submission.id}`);
+  redirect(`/writer/submissions/${submission.id}?created=1`);
 }

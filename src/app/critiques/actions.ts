@@ -19,11 +19,37 @@ export async function submitCritiqueFeedback(assignmentId: string, formData: For
   const improvements = String(formData.get("improvements") ?? "").trim();
   const keyTakeaways = String(formData.get("keyTakeaways") ?? "").trim();
 
-  if (!strengths && !improvements && !keyTakeaways) {
-    throw new Error("Add at least one note in the summary fields.");
+  const commentsJson = String(formData.get("commentsJson") ?? "").trim();
+  type Parsed = { quote: string; message: string };
+  let parsedComments: Parsed[] = [];
+  if (commentsJson) {
+    try {
+      const raw = JSON.parse(commentsJson) as unknown;
+      if (Array.isArray(raw)) {
+        parsedComments = raw
+          .filter(
+            (c): c is Parsed =>
+              c !== null &&
+              typeof c === "object" &&
+              typeof (c as Parsed).quote === "string" &&
+              typeof (c as Parsed).message === "string",
+          )
+          .map((c) => ({
+            quote: c.quote.trim(),
+            message: c.message.trim(),
+          }))
+          .filter((c) => c.quote.length > 0 && c.message.length > 0);
+      }
+    } catch {
+      // ignore invalid JSON
+    }
   }
 
-  await db.critiqueFeedback.upsert({
+  if (!strengths && !improvements && !keyTakeaways && parsedComments.length === 0) {
+    throw new Error("Add at least one margin note or fill in the summary fields.");
+  }
+
+  const feedback = await db.critiqueFeedback.upsert({
     where: { assignmentId: assignment.id },
     create: {
       assignmentId: assignment.id,
@@ -33,6 +59,17 @@ export async function submitCritiqueFeedback(assignmentId: string, formData: For
     },
     update: { strengths, improvements, keyTakeaways },
   });
+
+  await db.inlineComment.deleteMany({ where: { feedbackId: feedback.id } });
+  if (parsedComments.length > 0) {
+    await db.inlineComment.createMany({
+      data: parsedComments.map((c) => ({
+        feedbackId: feedback.id,
+        quote: c.quote,
+        message: c.message,
+      })),
+    });
+  }
 
   revalidatePath(`/critiques/${assignmentId}`);
   revalidatePath(`/writer/submissions/${assignment.submissionId}`);

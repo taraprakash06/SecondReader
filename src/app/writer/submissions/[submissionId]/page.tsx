@@ -16,14 +16,18 @@ import {
 
 export default async function WriterSubmissionDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ submissionId: string }>;
+  searchParams?: Promise<{ created?: string }>;
 }) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) redirect("/auth/sign-in");
 
   const { submissionId } = await params;
+  const sp = (await searchParams) ?? {};
+  const justCreated = sp.created === "1" || sp.created === "true";
 
   const submission = await db.submission.findFirst({
     where: { id: submissionId, writerId: userId },
@@ -51,6 +55,17 @@ export default async function WriterSubmissionDetailPage({
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
+      {justCreated ? (
+        <div
+          role="status"
+          className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950"
+        >
+          <p className="font-semibold">Submission created</p>
+          <p className="mt-1 text-emerald-900/90">
+            Your piece is saved. You can invite readers from Browse Readers when you’re ready.
+          </p>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-2">
         <Link className="text-sm font-medium text-zinc-700 hover:text-zinc-900" href="/writer">
           ← Writer space
