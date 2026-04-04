@@ -4,12 +4,13 @@ import { db } from "@/lib/db";
 import { FeedbackSampleComposer } from "@/components/FeedbackSampleComposer";
 import { UserRole, SampleGenre } from "@prisma/client";
 import { auth } from "@/lib/auth";
+import { ensureFictionToothSamplePiece } from "@/lib/ensureFictionToothSample";
+import {
+  CANONICAL_TOOTH_TITLE,
+  LEGACY_TOOTH_TITLE,
+} from "@/lib/sampleTexts/fictionTooth";
 
 type DraftComment = { id: string; quote: string; message: string };
-
-/** Canonical DB title for the fiction onboarding piece (“Tooth”). Legacy DBs may still have the old title. */
-const CANONICAL_TOOTH_TITLE = "Anonymous Sample (Fiction): Tooth";
-const LEGACY_TOOTH_TITLE = "Anonymous Sample (Fiction): The Tooth Fairy";
 
 const FICTION_GENRE: SampleGenre = "FICTION";
 
@@ -18,6 +19,7 @@ function normalizeString(input: FormDataEntryValue | null) {
 }
 
 async function getToothSamplePiece() {
+  await ensureFictionToothSamplePiece();
   return (
     (await db.samplePiece.findUnique({ where: { title: CANONICAL_TOOTH_TITLE } })) ??
     (await db.samplePiece.findUnique({ where: { title: LEGACY_TOOTH_TITLE } }))
@@ -116,7 +118,7 @@ export default async function ReaderOnboardingPage({
           ← Back
         </Link>
         <p className="mt-6 text-sm text-[color:var(--ink-muted)]">
-          The fiction sample piece is not configured. Run the database seed.
+          Something went wrong loading the sample piece. Please try again in a moment.
         </p>
       </div>
     );
