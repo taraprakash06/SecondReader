@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { browseReadersEmailFilter } from "@/lib/browseReadersAllowlist";
 
 type SearchParams = {
   age?: string;
@@ -23,20 +22,15 @@ export default async function ReadersPage({
 
   const readers = await db.readerProfile.findMany({
     where: {
-      AND: [
-        { user: { email: browseReadersEmailFilter() } },
-        ...(q
-          ? [
-              {
-                OR: [
-                  { user: { name: { contains: q } } },
-                  { genres: { contains: q } },
-                  { caresAbout: { contains: q } },
-                ],
-              },
-            ]
-          : []),
-      ],
+      ...(q
+        ? {
+            OR: [
+              { user: { name: { contains: q } } },
+              { genres: { contains: q } },
+              { caresAbout: { contains: q } },
+            ],
+          }
+        : {}),
       ...(age ? { ageCategory: age as never } : {}),
       feedbackSamples: { some: {} },
     },

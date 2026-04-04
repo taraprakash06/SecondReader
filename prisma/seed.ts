@@ -1,5 +1,4 @@
-import { PrismaClient, ReaderAgeCategory, SampleGenre, UserRole } from "@prisma/client";
-import { hash } from "bcryptjs";
+import { PrismaClient, SampleGenre } from "@prisma/client";
 import {
   CANONICAL_TOOTH_TITLE,
   FICTION_TOOTH_TEXT,
@@ -8,6 +7,10 @@ import {
 
 const db = new PrismaClient();
 
+/**
+ * Optional local/dev: upserts anonymous SamplePiece rows used by reader onboarding and future flows.
+ * Does not create users—real accounts sign up through the app.
+ */
 async function main() {
   await db.samplePiece.updateMany({
     where: { title: LEGACY_TOOTH_TITLE },
@@ -88,83 +91,12 @@ async function main() {
     },
   });
 
-  await db.user.deleteMany({
-    where: { email: { in: ["reader.a@example.com", "reader.b@example.com"] } },
-  });
-
-  const taraPassword = await hash("password123", 12);
-
-  await db.user.upsert({
-    where: { email: "tara.prakash@example.com" },
-    update: {
-      name: "Tara Prakash",
-      role: UserRole.READER,
-      passwordHash: taraPassword,
-    },
-    create: {
-      email: "tara.prakash@example.com",
-      name: "Tara Prakash",
-      role: UserRole.READER,
-      passwordHash: taraPassword,
-      readerProfile: {
-        create: {
-          ageCategory: ReaderAgeCategory.ADULT,
-          writingBackground: "Workshops: community fiction circle. Publications: none (yet).",
-          genres: "Literary Fiction,Speculative,Flash",
-          caresAbout: "Emotional clarity, scene momentum, and concrete images.",
-          feedbackPhilosophy:
-            "I’ll name what’s working first, then focus on 1–2 high-leverage fixes. I’m direct but not cruel.",
-          feedbackSamples: {
-            create: [
-              {
-                samplePieceId: fictionSample.id,
-                genre: SampleGenre.FICTION,
-                publicStrengths: "Vivid opening image; strong atmosphere; intriguing tension.",
-                publicImprovements:
-                  "Clarify stakes earlier; tighten a few abstractions; sharpen the knock moment.",
-                publicKeyTakeaways:
-                  "You’re closest when you stay concrete. Keep the uncanny grounded in sensory detail.",
-                comments: {
-                  create: [
-                    {
-                      quote: "it looked like a held breath.",
-                      message:
-                        "Great metaphor—sets tone fast. Consider pairing with one concrete detail (temperature, light) to anchor it.",
-                    },
-                    {
-                      quote: "The cabin smelled like cedar and old decisions.",
-                      message:
-                        "Lovely line. If you can hint what the 'decision' was (even obliquely), the hook strengthens.",
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-    },
-  });
-
-  await db.user.upsert({
-    where: { email: "writer@example.com" },
-    update: { role: UserRole.WRITER },
-    create: {
-      email: "writer@example.com",
-      name: "Writer Demo",
-      role: UserRole.WRITER,
-    },
-  });
-
-  console.log("Seeded:", {
-    samplePieces: {
-      fiction: fictionSample.id,
-      essay: essaySample.id,
-      poetry: poetrySample.id,
-      literaryNonfiction: litNonfictionSample.id,
-      genreFiction: genreFictionSample.id,
-    },
-    browseReader: "tara.prakash@example.com",
+  console.log("Sample pieces upserted:", {
+    fiction: fictionSample.id,
+    essay: essaySample.id,
+    poetry: poetrySample.id,
+    literaryNonfiction: litNonfictionSample.id,
+    genreFiction: genreFictionSample.id,
   });
 }
 
