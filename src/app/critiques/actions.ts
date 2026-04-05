@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { CritiqueStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -14,6 +15,9 @@ export async function submitCritiqueFeedback(assignmentId: string, formData: For
     include: { submission: true },
   });
   if (!assignment || assignment.readerId !== userId) throw new Error("Not allowed.");
+  if (assignment.status === CritiqueStatus.COMPLETED) {
+    throw new Error("This feedback is marked complete and can’t be edited.");
+  }
 
   const strengths = String(formData.get("strengths") ?? "").trim();
   const improvements = String(formData.get("improvements") ?? "").trim();
@@ -73,6 +77,57 @@ export async function submitCritiqueFeedback(assignmentId: string, formData: For
 
   revalidatePath(`/critiques/${assignmentId}`);
   revalidatePath(`/writer/submissions/${assignment.submissionId}`);
+}
+
+export async function markCritiqueFeedbackComplete(assignmentId: string) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Sign in.");
+
+  const assignment = await db.critiqueAssignment.findUnique({
+    where: { id: assignmentId },
+    include: {
+      submission: true,
+      reader: true,
+      feedback: { include: { comments: true } },
+    },
+  });
+  if (!assignment || assignment.readerId !== userId) throw new Error("Not allowed.");
+
+  if (assignment.status === CritiqueStatus.COMPLETED) {
+    revalidatePath(`/critiques/${assignmentId}`);
+    return;
+  }
+
+  if (!assignment.feedback) {
+    throw new Error("Save your feedback first (use Save feedback).");
+  }
+
+  const f = assignment.feedback;
+  const hasSummary = !!(f.strengths.trim() || f.improvements.trim() || f.keyTakeaways.trim());
+  const hasMargins = f.comments.length > 0;
+  if (!hasSummary && !hasMargins) {
+    throw new Error("Add at least one margin note or summary field before marking complete.");
+  }
+
+  await db.critiqueAssignment.update({
+    where: { id: assignmentId },
+    data: { status: CritiqueStatus.COMPLETED },
+  });
+
+  await db.notification.create({
+    data: {
+      userId: assignment.submission.writerId,
+      type: "CRITIQUE_FEEDBACK_COMPLETE",
+      title: `${assignment.reader.name} finished feedback on “${assignment.submission.title}”`,
+      body: "Open your critique to read margin notes and the overall summary.",
+      relatedAssignmentId: assignment.id,
+    },
+  });
+
+  revalidatePath(`/critiques/${assignmentId}`);
+  revalidatePath(`/writer/submissions/${assignment.submissionId}`);
+  revalidatePath("/notifications");
 }
 
 export async function unlockFullPieceForReader(assignmentId: string) {

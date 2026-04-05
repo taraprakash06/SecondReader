@@ -104,6 +104,17 @@ export default async function NotificationsPage() {
                 </div>
               ) : null}
 
+              {n.type === "CRITIQUE_FEEDBACK_COMPLETE" && n.relatedAssignmentId ? (
+                <div className="mt-4">
+                  <Link
+                    className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                    href={`/critiques/${n.relatedAssignmentId}`}
+                  >
+                    Open draft with feedback →
+                  </Link>
+                </div>
+              ) : null}
+
               {!invitePending && !volunteerPending ? (
                 <>
                   {n.invite?.status === "ACCEPTED" ? (

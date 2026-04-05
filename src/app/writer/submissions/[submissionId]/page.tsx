@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CritiqueStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -145,13 +146,20 @@ export default async function WriterSubmissionDetailPage({
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-zinc-900">{a.reader.name}</p>
-                    <p className="text-xs text-zinc-600">Status: {a.status}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
+                      <span>Status: {a.status}</span>
+                      {a.status === CritiqueStatus.COMPLETED ? (
+                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-900">
+                          Feedback ready
+                        </span>
+                      ) : null}
+                    </p>
                   </div>
                   <Link
-                    className="text-sm font-medium text-zinc-700 hover:text-zinc-900"
+                    className="shrink-0 text-sm font-medium text-zinc-700 hover:text-zinc-900"
                     href={`/critiques/${a.id}`}
                   >
-                    Open critique →
+                    {a.status === CritiqueStatus.COMPLETED ? "Open feedback →" : "Open critique →"}
                   </Link>
                 </div>
 
