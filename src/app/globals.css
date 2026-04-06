@@ -30,7 +30,48 @@ html {
 }
 
 body {
-  background: var(--background);
+  /* Base paper tone; decorative layers sit above (first in list = top). ~3% ink weight overall. */
+  background-color: var(--background);
+  background-image:
+    url("/bg-writing-texture.svg"),
+    repeating-linear-gradient(
+      0deg,
+      rgba(15, 15, 19, 0.024) 0,
+      rgba(15, 15, 19, 0.024) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 47px,
+      rgba(15, 15, 19, 0.03) 47px,
+      rgba(15, 15, 19, 0.03) 48px,
+      transparent 48px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgba(15, 15, 19, 0.014) 31px,
+      rgba(15, 15, 19, 0.016) 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 31px,
+      rgba(15, 15, 19, 0.014) 31px,
+      rgba(15, 15, 19, 0.016) 32px
+    );
+  background-size:
+    280px 200px,
+    auto,
+    auto,
+    32px 32px,
+    32px 32px;
+  background-position: 0 0;
+  background-repeat: repeat, repeat, no-repeat, repeat, repeat;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
     Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
