@@ -150,7 +150,11 @@ export default async function WriterSubmissionDetailPage({
                       <span>Status: {a.status}</span>
                       {a.status === CritiqueStatus.COMPLETED ? (
                         <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-900">
-                          Feedback ready
+                          Full critique complete
+                        </span>
+                      ) : a.firstPassComplete ? (
+                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 font-semibold text-sky-950">
+                          First pass complete
                         </span>
                       ) : null}
                     </p>
@@ -159,7 +163,7 @@ export default async function WriterSubmissionDetailPage({
                     className="shrink-0 text-sm font-medium text-zinc-700 hover:text-zinc-900"
                     href={`/critiques/${a.id}`}
                   >
-                    {a.status === CritiqueStatus.COMPLETED ? "Open feedback →" : "Open critique →"}
+                    {a.status === CritiqueStatus.COMPLETED ? "Open full critique →" : "Open critique →"}
                   </Link>
                 </div>
 

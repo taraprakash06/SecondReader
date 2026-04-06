@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { sanitizeRichText } from "@/lib/sanitizeRichText";
 
 const SHELL_CLASS =
@@ -15,11 +15,11 @@ const SHELL_CLASS =
  */
 export function RichTextInitialPagesField() {
   const editorRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   return (
     <>

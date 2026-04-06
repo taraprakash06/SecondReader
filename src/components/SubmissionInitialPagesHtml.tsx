@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { sanitizeRichText } from "@/lib/sanitizeRichText";
 
 type Props = {
@@ -15,11 +15,11 @@ type Props = {
  * - Browser extensions mutating the tree before hydration completes
  */
 export function SubmissionInitialPagesHtml({ content, className }: Props) {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
+  const ready = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   if (!ready) {
     return (

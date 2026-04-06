@@ -210,9 +210,16 @@ model CritiqueAssignment {
   submissionId  String
   readerId      String
   status        CritiqueStatus @default(ACTIVE)
+  /// Reader finished feedback on the initial gate (typically first 3 pages).
+  firstPassComplete Boolean     @default(false)
+  firstPassCompletedAt DateTime?
+  /// Writer decision after first pass completes. Null = not decided yet.
+  writerContinues Boolean?
+  writerDecidedAt DateTime?
   unlockedPages Int            @default(3)
   /// When true, the reader may read `Submission.fullText` in addition to initial pages.
   readerSeesFullPiece Boolean  @default(false)
+  fullPieceUnlockedAt DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 

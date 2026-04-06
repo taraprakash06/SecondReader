@@ -7,7 +7,7 @@ import { SubmissionInitialPagesBody } from "@/components/SubmissionInitialPagesB
 import { CritiqueFeedbackComposer } from "@/components/CritiqueFeedbackComposer";
 import { CritiqueFeedbackReview } from "@/components/CritiqueFeedbackReview";
 import { MarkFeedbackCompleteButton } from "@/components/MarkFeedbackCompleteButton";
-import { submitCritiqueFeedback, unlockFullPieceForReader } from "@/app/critiques/actions";
+import { stopCritiqueWithReader, submitCritiqueFeedback, unlockFullPieceForReader } from "@/app/critiques/actions";
 import { combinedDraftForMarginAnnotation } from "@/lib/submissionMarginText";
 
 export default async function CritiquePage({
@@ -52,6 +52,8 @@ export default async function CritiquePage({
     })) ?? [];
 
   const isComplete = assignment.status === CritiqueStatus.COMPLETED;
+  const isStopped = assignment.status === CritiqueStatus.STOPPED;
+  const firstPassComplete = assignment.firstPassComplete;
   const hasFeedback = !!assignment.feedback;
 
   return (
@@ -70,41 +72,60 @@ export default async function CritiquePage({
           {assignment.reader.name} · Writer: {sub.writer.name}
           {isComplete ? (
             <span className="ml-2 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-900">
-              Feedback complete
+              Critique complete
+            </span>
+          ) : firstPassComplete ? (
+            <span className="ml-2 inline-flex rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-950">
+              First pass complete
             </span>
           ) : null}
         </p>
       </div>
 
-      {isWriter && hasFeedback && !isComplete ? (
+      {isWriter && hasFeedback && !isComplete && !firstPassComplete ? (
         <p className="mt-6 rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950">
           <span className="font-semibold">Draft in progress.</span> {assignment.reader.name} may still edit until
           they mark this critique complete. You can read what they’ve saved so far below.
         </p>
       ) : null}
 
+      {isWriter && firstPassComplete && !isComplete ? (
+        <p className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+          <span className="font-semibold">First pass is complete.</span> Read their notes below, then decide
+          whether to continue and share the full piece.
+        </p>
+      ) : null}
+
       {isWriter && isComplete && hasFeedback ? (
         <p className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">
-          <span className="font-semibold">Feedback is complete.</span> Below is your draft with their margin notes
-          and overall response.
+          <span className="font-semibold">Full critique is complete.</span> Below is your draft with their margin
+          notes and overall response.
+        </p>
+      ) : null}
+
+      {isReader && isStopped ? (
+        <p className="mt-6 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900">
+          <span className="font-semibold">This critique was ended by the writer.</span> You can still review what
+          you already left below.
         </p>
       ) : null}
 
       {isReader && isComplete ? (
         <p className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
-          <span className="font-semibold">You marked this critique complete.</span> The writer has been notified.
-          Your notes below are read-only.
+          <span className="font-semibold">You marked the full critique complete.</span> The writer has been
+          notified. Your notes below are read-only.
         </p>
       ) : null}
 
       {/* Reader: still editing — single column: excerpt + margin notes + summary */}
-      {isReader && !isComplete ? (
+      {isReader && !isComplete && !isStopped ? (
         <div className="mt-8">
           <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
             <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
             <p className="mt-1 text-xs text-zinc-600">
-              Read and annotate the excerpt below (includes any pages the writer unlocked). Save, then mark
-              complete when you’re finished.
+              Read and annotate the excerpt below (includes any pages the writer unlocked). Save often. Mark the
+              first pass complete when you’re done with the initial pages. If the writer continues with you, you’ll
+              be able to review the full draft and keep building on your notes.
             </p>
             <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-5 space-y-6">
               <CritiqueFeedbackComposer
@@ -121,7 +142,18 @@ export default async function CritiquePage({
                 Save feedback
               </button>
             </form>
-            {hasFeedback ? <MarkFeedbackCompleteButton assignmentId={assignment.id} /> : null}
+            {hasFeedback ? (
+              <MarkFeedbackCompleteButton
+                assignmentId={assignment.id}
+                firstPassComplete={firstPassComplete}
+                readerSeesFullPiece={assignment.readerSeesFullPiece}
+              />
+            ) : null}
+            {firstPassComplete && !assignment.readerSeesFullPiece ? (
+              <p className="mt-6 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
+                Waiting for the writer’s decision. If they continue with you, the full piece will appear here.
+              </p>
+            ) : null}
             {sub.fullText.trim() && !assignment.readerSeesFullPiece ? (
               <p className="mt-6 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
                 If the writer likes your feedback, they may unlock more pages for you on this critique.
@@ -185,28 +217,38 @@ export default async function CritiquePage({
 
               {assignment.feedback ? (
                 <div className="mt-8 border-t border-zinc-200 pt-8">
-                  <h3 className="text-sm font-semibold text-zinc-900">Share more pages</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900">Continue with this reader?</h3>
                   <p className="mt-1 text-sm text-zinc-600">
-                    If you’re happy with this feedback, you can let {assignment.reader.name} read any additional
-                    pages you’ve added to this submission.
+                    After the first pass is complete, decide whether to continue. If you continue, the full piece is
+                    unlocked and the reader is notified.
                   </p>
                   {!sub.fullText.trim() ? (
                     <p className="mt-3 text-sm text-amber-800">
                       Add extended pages to this submission from your writer dashboard when that’s available.
                     </p>
                   ) : assignment.readerSeesFullPiece ? (
-                    <p className="mt-3 text-sm text-zinc-600">
-                      {assignment.reader.name} can already see your additional pages.
-                    </p>
+                    <p className="mt-3 text-sm text-zinc-600">{assignment.reader.name} can already see your full piece.</p>
+                  ) : !firstPassComplete ? (
+                    <p className="mt-3 text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
                   ) : (
-                    <form action={unlockFullPieceForReader.bind(null, assignment.id)} className="mt-4">
-                      <button
-                        type="submit"
-                        className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
-                      >
-                        Unlock additional pages for {assignment.reader.name}
-                      </button>
-                    </form>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <form action={unlockFullPieceForReader.bind(null, assignment.id)}>
+                        <button
+                          type="submit"
+                          className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                        >
+                          Continue &amp; share full piece
+                        </button>
+                      </form>
+                      <form action={stopCritiqueWithReader.bind(null, assignment.id)}>
+                        <button
+                          type="submit"
+                          className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
+                        >
+                          Stop here
+                        </button>
+                      </form>
+                    </div>
                   )}
                 </div>
               ) : null}
