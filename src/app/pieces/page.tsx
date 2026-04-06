@@ -124,7 +124,7 @@ export default async function BrowsePiecesPage({
           Read what writers are looking for. Full text stays private until a writer accepts your request.
         </p>
         <div
-          className="mt-3 rounded-xl border border-zinc-200/90 bg-zinc-100/80 px-4 py-3 text-sm leading-relaxed text-zinc-700 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6)]"
+          className="mt-3 rounded-xl border border-zinc-200/90 bg-white px-4 py-3 text-sm leading-relaxed text-zinc-700 shadow-sm"
           role="note"
         >
           <ul className="list-inside list-disc space-y-1 marker:text-zinc-400">

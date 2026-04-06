@@ -19,7 +19,7 @@ export default function ReaderLanding() {
       </div>
 
       <div className="mt-8 overflow-hidden rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm">
-        <div className="rounded-[23px] border border-zinc-200 bg-white/90 p-6 backdrop-blur">
+        <div className="rounded-[23px] border border-zinc-200 bg-white p-6">
           <h2 className="text-lg font-semibold">How it works (for readers)</h2>
           <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
             <li>

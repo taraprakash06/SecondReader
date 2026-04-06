@@ -28,12 +28,11 @@ export default function Home() {
           </div>
 
           <p className="max-w-2xl text-base leading-7 text-[color:var(--ink-muted)]">
-            Find trusted readers. Start with 3 pages.
-          </p>
-          <p className="max-w-2xl text-base leading-7 text-[color:var(--ink-muted)]">
-            Share only what feels safe. Readers show a public feedback sample
-            first. If it’s a fit, unlock more pages. Readers are capped at a few
-            active critiques to keep attention real.
+            Find readers you trust based on their feedback samples. Share the
+            first few pages of your work and see how the feedback lands. If
+            their feedback is helpful, you can unlock more pages for them and
+            share the rest of your piece. Readers are limited to a few active
+            critiques so every piece gets real attention.
           </p>
         </div>
 
