@@ -36,5 +36,6 @@ export function combinedDraftForMarginAnnotation(
   const b = submissionTextForMarginAnnotation(opts.fullText);
   if (!b) return a;
   if (!a) return b;
-  return `${a}\n\n---\n\n${b}`;
+  // Clear divider between the gated first read and the remainder (one paragraph for layout).
+  return `${a}\n\n──────── Additional pages — your earlier notes on the opening still apply above ────────\n\n${b}`;
 }

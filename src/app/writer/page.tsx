@@ -9,8 +9,8 @@ export default function WriterLanding() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Writer space</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-          Submit the first 3 pages of your piece and then browse readers by sample and filters to see who can best
-          provide feedback on your work.
+          Upload your full manuscript, then browse readers by sample and filters. Readers only see your first ~3
+          pages until you choose to share more.
         </p>
       </div>
 
@@ -20,16 +20,16 @@ export default function WriterLanding() {
             <h2 className="text-sm font-semibold">How it works (for writers)</h2>
             <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
               <li>
-                <span className="font-medium text-[color:var(--ink)]">Step 1:</span> Share your first 3 pages (or the
-                whole piece if shorter).
+                <span className="font-medium text-[color:var(--ink)]">Step 1:</span> Paste your full manuscript—only
+                the first ~3 pages are shown to readers at first.
               </li>
               <li>
                 <span className="font-medium text-[color:var(--ink)]">Step 2:</span> A reader gives inline margin notes
-                + a short summary.
+                + a short summary on those pages.
               </li>
               <li>
-                <span className="font-medium text-[color:var(--ink)]">Step 3:</span> You choose to stop or continue
-                (unlock more pages).
+                <span className="font-medium text-[color:var(--ink)]">Step 3:</span> You choose whether to share the
+                rest of the piece with that reader or take feedback on your own.
               </li>
             </ol>
             <p className="mt-3 text-xs text-[color:var(--ink-muted)]">
@@ -44,9 +44,9 @@ export default function WriterLanding() {
           className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)]"
           href="/writer/submit"
         >
-          <h2 className="text-lg font-semibold">Submit a piece (3-page limit)</h2>
+          <h2 className="text-lg font-semibold">Submit a piece</h2>
           <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
-            Add genre, word count, draft stage, and what kind of feedback you want right now.
+            Paste your full manuscript; readers only see the first ~3 pages until you choose to share more.
           </p>
         </Link>
 

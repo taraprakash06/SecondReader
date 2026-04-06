@@ -13,9 +13,9 @@ export default function WriterSubmitPage() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Submit a piece</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-          You’ll share only your first{" "}
-          <span className="font-medium text-[color:var(--ink)]">3 pages</span> for
-          now. If a reader is a fit, you can unlock more later.
+          Upload your <span className="font-medium text-[color:var(--ink)]">full manuscript</span> here. The platform
+          only shows readers your <span className="font-medium text-[color:var(--ink)]">first ~3 pages</span> at
+          first; you can share the rest with a reader after you see their feedback.
         </p>
       </div>
 

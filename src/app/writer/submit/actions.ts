@@ -6,7 +6,7 @@ import { DraftStage, FeedbackTonePreference } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { parseWriterFocusAreasJson } from "@/lib/writerFocusAreas";
 import { writerAreaToLegacyFocus } from "@/lib/writerFocusAreasServer";
-import { sanitizeAndValidateInitialPages } from "@/lib/sanitizeRichText";
+import { sanitizeFullManuscript, splitIntoInitialPagesAndFullText } from "@/lib/manuscriptSplit";
 
 export async function createSubmission(formData: FormData) {
   const session = await auth();
@@ -26,12 +26,13 @@ export async function createSubmission(formData: FormData) {
   const focusOtherRaw = String(formData.get("focusOther") ?? "").trim();
   const notHelpful = String(formData.get("notHelpful") ?? "").trim();
   const writerBrowseNote = String(formData.get("writerBrowseNote") ?? "").trim().slice(0, 2000);
-  const initialText = String(formData.get("initialPages") ?? "");
+  const manuscriptRaw = String(formData.get("fullManuscript") ?? "");
 
   if (!title || !genre) throw new Error("Missing title/genre.");
   if (!Number.isFinite(wordCount) || wordCount <= 0) throw new Error("Invalid word count.");
   if (!Object.values(DraftStage).includes(stage)) throw new Error("Invalid stage.");
-  const initialPages = sanitizeAndValidateInitialPages(initialText);
+  const sanitizedFull = sanitizeFullManuscript(manuscriptRaw);
+  const { initialPages, fullText } = splitIntoInitialPagesAndFullText(sanitizedFull);
   if (focusAreas.includes("OTHER") && focusOtherRaw.length < 3) {
     throw new Error('Please add a short explanation when you select "Other".');
   }
@@ -55,6 +56,7 @@ export async function createSubmission(formData: FormData) {
       notHelpful,
       writerBrowseNote,
       initialPages,
+      fullText,
     },
   });
 

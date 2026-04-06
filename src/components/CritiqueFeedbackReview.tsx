@@ -19,13 +19,19 @@ export function CritiqueFeedbackReview({
   readerName: string;
   layoutVariant?: MarginCommentsLayoutVariant;
 }) {
+  const hasMargins = feedback.comments.length > 0;
+
   return (
     <div className="space-y-6">
-      {feedback.comments.length > 0 ? (
+      {marginAnnotationText.trim() ? (
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">Margin notes</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">
+            {hasMargins ? "Margin notes" : "Draft"}
+          </h3>
           <p className="mt-1 text-xs text-zinc-600">
-            Inline comments from {readerName} on the excerpt they annotated.
+            {hasMargins
+              ? `Inline comments from ${readerName} on the excerpt they annotated.`
+              : "Your shared text. The reader left overall feedback below."}
           </p>
           <div className="mt-3 overflow-hidden rounded-2xl border border-zinc-200">
             <MarginCommentsStatic
@@ -42,7 +48,7 @@ export function CritiqueFeedbackReview({
         </div>
       ) : null}
 
-      <div className="space-y-3 text-sm text-zinc-700">
+      <div className="space-y-3 border-t border-zinc-200 pt-6 text-sm text-zinc-700">
         <div>
           <p className="font-medium text-zinc-900">Strengths</p>
           <p className="mt-1 whitespace-pre-wrap">{feedback.strengths || "—"}</p>

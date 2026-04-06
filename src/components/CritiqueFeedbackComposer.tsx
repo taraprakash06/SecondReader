@@ -10,12 +10,15 @@ export function CritiqueFeedbackComposer({
   defaultImprovements,
   defaultKeyTakeaways,
   defaultComments,
+  fullPieceUnlocked = false,
 }: {
   draftPlainForMargins: string;
   defaultStrengths: string;
   defaultImprovements: string;
   defaultKeyTakeaways: string;
   defaultComments: MarginDraftComment[];
+  /** When true, reader has the full manuscript after writer unlock; prior notes on the opening are preserved. */
+  fullPieceUnlocked?: boolean;
 }) {
   const { data: session } = useSession();
   const readerName = session?.user?.name?.trim() || "You";
@@ -36,11 +39,23 @@ export function CritiqueFeedbackComposer({
     <>
       <div className="space-y-3">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">Shared draft — margin notes</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">
+            {fullPieceUnlocked ? "Full manuscript — margin notes" : "Shared draft — margin notes"}
+          </h3>
           <p className="mt-1 text-xs text-zinc-600">
-            Select text in the excerpt below (or type a phrase) to add comments or deletion suggestions. Paste from
-            Word may show as plain text—highlights still match the piece. Then add your overall summary under this
-            section.
+            {fullPieceUnlocked ? (
+              <>
+                The opening includes your <span className="font-medium text-zinc-800">saved</span> margin notes from
+                the first pass. After the divider line, continue annotating the rest of the piece the same way. Update
+                your summary below to reflect feedback on the full manuscript when you’re ready.
+              </>
+            ) : (
+              <>
+                Select text in the excerpt below (or type a phrase) to add comments or deletion suggestions. Paste from
+                Word may show as plain text—highlights still match the piece. Then add your overall summary under this
+                section.
+              </>
+            )}
           </p>
         </div>
         <MarginNotesEditor
@@ -50,7 +65,7 @@ export function CritiqueFeedbackComposer({
           readerName={readerName}
           readerInitial={readerInitial}
           layoutVariant="wide"
-          heading="Your excerpt"
+          heading={fullPieceUnlocked ? "Full manuscript" : "Your excerpt"}
           description={
             <>
               <span className="font-semibold text-zinc-800">Comment</span>: highlight in the text and add your note.{" "}
@@ -64,7 +79,9 @@ export function CritiqueFeedbackComposer({
       <div className="mt-6 border-t border-zinc-200 pt-6">
         <h3 className="text-sm font-semibold text-zinc-900">Your feedback summary</h3>
         <p className="mt-1 text-xs text-zinc-600">
-          Overall strengths, improvements, and takeaways—alongside any margin notes above.
+          {fullPieceUnlocked
+            ? "Overall strengths, improvements, and takeaways for the whole piece—alongside all margin notes above."
+            : "Overall strengths, improvements, and takeaways—alongside any margin notes above."}
         </p>
         <div className="mt-4 space-y-3">
           <label className="grid gap-1 text-sm">

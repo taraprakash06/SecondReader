@@ -28,11 +28,9 @@ export default function Home() {
           </div>
 
           <p className="max-w-2xl text-base leading-7 text-[color:var(--ink-muted)]">
-            Find readers you trust based on their feedback samples. Share the
-            first few pages of your work and see how the feedback lands. If
-            their feedback is helpful, you can unlock more pages for them and
-            share the rest of your piece. Readers are limited to a few active
-            critiques so every piece gets real attention.
+            Find readers you trust based on their feedback samples. You upload your full manuscript; readers only see
+            your first ~3 pages until you choose to share more. If their feedback is helpful, you can open the rest
+            of your piece to them. Readers are limited to a few active critiques so every piece gets real attention.
           </p>
         </div>
 
@@ -45,8 +43,8 @@ export default function Home() {
               <div>
                 <h2 className="text-lg font-semibold">Submit Your Work</h2>
                 <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
-                  Share 3 pages, set genre + word count, and ask for the kind of
-                  feedback you want right now.
+                  Upload your full piece (readers only see the first ~3 pages at first), set genre + word count, and
+                  say what feedback you want.
                 </p>
               </div>
               <span className="text-sm font-medium text-[color:var(--brand-magenta)]">
@@ -103,16 +101,16 @@ export default function Home() {
               </h3>
               <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--ink-muted)]">
                 <li>
-                  Share your first 3 pages (
+                  Upload your full manuscript (
                   <Link className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-magenta)]/40 underline-offset-2 hover:decoration-[color:var(--brand-magenta)]" href="/writer">
                     Submit Your Work
                   </Link>
-                  ).
+                  )—readers only see the first ~3 pages until you share more.
                 </li>
                 <li>Browse readers or receive requests.</li>
                 <li>Invite readers you trust (up to 3 readers per piece).</li>
-                <li>Receive feedback on your first 3 pages from a reader.</li>
-                <li>Unlock more pages with that reader if it’s a fit.</li>
+                <li>Receive feedback on your first pages from a reader.</li>
+                <li>Share the rest of your piece with that reader if it’s a fit.</li>
                 <li>Build ongoing critique relationships.</li>
               </ol>
             </div>

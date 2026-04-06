@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { CritiqueStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { SubmissionInitialPagesBody } from "@/components/SubmissionInitialPagesBody";
 import { CritiqueFeedbackComposer } from "@/components/CritiqueFeedbackComposer";
 import { CritiqueFeedbackReview } from "@/components/CritiqueFeedbackReview";
 import { MarkFeedbackCompleteButton } from "@/components/MarkFeedbackCompleteButton";
@@ -36,8 +35,6 @@ export default async function CritiquePage({
   if (!isWriter && !isReader) notFound();
 
   const sub = assignment.submission;
-  const canSeeFull =
-    isWriter || (isReader && assignment.readerSeesFullPiece && sub.fullText.trim().length > 0);
 
   const marginAnnotationText = combinedDraftForMarginAnnotation(sub.initialPages, {
     includeFullText: assignment.readerSeesFullPiece && sub.fullText.trim().length > 0,
@@ -55,6 +52,13 @@ export default async function CritiquePage({
   const isStopped = assignment.status === CritiqueStatus.STOPPED;
   const firstPassComplete = assignment.firstPassComplete;
   const hasFeedback = !!assignment.feedback;
+
+  const readerHasFullManuscriptUnlocked =
+    isReader &&
+    assignment.readerSeesFullPiece &&
+    sub.fullText.trim().length > 0 &&
+    !isComplete &&
+    !isStopped;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
@@ -123,10 +127,27 @@ export default async function CritiquePage({
           <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
             <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
             <p className="mt-1 text-xs text-zinc-600">
-              Read and annotate the excerpt below (includes any pages the writer unlocked). Save often. Mark the
-              first pass complete when you’re done with the initial pages. If the writer continues with you, you’ll
-              be able to review the full draft and keep building on your notes.
+              {readerHasFullManuscriptUnlocked ? (
+                <>
+                  The writer unlocked their full manuscript. Below is the <span className="font-medium">entire</span>{" "}
+                  piece: your existing margin notes on the opening are unchanged, then a divider, then the additional
+                  pages—add more notes on the remainder. Save often, then mark the full critique complete when
+                  you&apos;re finished.
+                </>
+              ) : (
+                <>
+                  Read and annotate the excerpt below (first ~3 pages). Save often. Mark the first pass complete when
+                  you&apos;re done with those pages. If the writer continues with you, the rest of the draft will appear
+                  here and you can build on the same feedback.
+                </>
+              )}
             </p>
+            {readerHasFullManuscriptUnlocked ? (
+              <p className="mt-3 rounded-xl border border-emerald-200/90 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-950">
+                <span className="font-semibold">Full piece unlocked.</span> Your first-pass notes and summary are kept;
+                extend them for the full manuscript.
+              </p>
+            ) : null}
             <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-5 space-y-6">
               <CritiqueFeedbackComposer
                 draftPlainForMargins={marginAnnotationText}
@@ -134,6 +155,7 @@ export default async function CritiquePage({
                 defaultImprovements={assignment.feedback?.improvements ?? ""}
                 defaultKeyTakeaways={assignment.feedback?.keyTakeaways ?? ""}
                 defaultComments={defaultMarginComments}
+                fullPieceUnlocked={readerHasFullManuscriptUnlocked}
               />
               <button
                 type="submit"
@@ -179,80 +201,82 @@ export default async function CritiquePage({
         </div>
       ) : null}
 
-      {/* Writer: view feedback */}
+      {/* Writer: one column — manuscript + margin gutter (like reader), then overall feedback, then actions */}
       {isWriter ? (
-        <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:gap-10">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-sm font-semibold text-zinc-900">Your draft</h2>
-            <p className="mt-1 text-xs text-zinc-600">Initial pages you shared with this reader.</p>
-            <div className="mt-4">
-              <SubmissionInitialPagesBody content={sub.initialPages} />
-            </div>
-
-            {canSeeFull && sub.fullText.trim() ? (
-              <div className="mt-8 border-t border-zinc-200 pt-8">
-                <h3 className="text-sm font-semibold text-zinc-900">Additional pages</h3>
-                <p className="mt-1 text-xs text-zinc-600">Unlocked for this reader.</p>
-                <div className="mt-4">
-                  <SubmissionInitialPagesBody content={sub.fullText} />
-                </div>
-              </div>
-            ) : null}
-          </section>
-
-          <section className="space-y-6">
-            <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-zinc-900">Reader response</h2>
-              {assignment.feedback ? (
-                <div className="mt-4">
+        <div className="mt-8 mx-auto w-full max-w-4xl">
+          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+            <h2 className="text-sm font-semibold text-zinc-900">Reader feedback</h2>
+            <p className="mt-1 text-xs text-zinc-600">
+              Your draft appears with {assignment.reader.name}&apos;s margin notes beside it, then their overall
+              response below.
+            </p>
+            {assignment.feedback ? (
+              <>
+                <div className="mt-6">
                   <CritiqueFeedbackReview
                     feedback={assignment.feedback}
                     marginAnnotationText={marginAnnotationText}
                     readerName={assignment.reader.name ?? "Reader"}
+                    layoutVariant="wide"
                   />
                 </div>
-              ) : (
-                <p className="mt-3 text-sm text-zinc-600">No feedback yet.</p>
-              )}
-
-              {assignment.feedback ? (
-                <div className="mt-8 border-t border-zinc-200 pt-8">
-                  <h3 className="text-sm font-semibold text-zinc-900">Continue with this reader?</h3>
-                  <p className="mt-1 text-sm text-zinc-600">
-                    After the first pass is complete, decide whether to continue. If you continue, the full piece is
-                    unlocked and the reader is notified.
-                  </p>
+                <div className="mt-10 border-t border-zinc-200 pt-8">
+                  {/* Whole piece was in the first read (~3 pages or less): no unlock / no Yes–No — just closure */}
                   {!sub.fullText.trim() ? (
-                    <p className="mt-3 text-sm text-amber-800">
-                      Add extended pages to this submission from your writer dashboard when that’s available.
-                    </p>
-                  ) : assignment.readerSeesFullPiece ? (
-                    <p className="mt-3 text-sm text-zinc-600">{assignment.reader.name} can already see your full piece.</p>
-                  ) : !firstPassComplete ? (
-                    <p className="mt-3 text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
+                    !firstPassComplete ? (
+                      <p className="text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
+                    ) : (
+                      <>
+                        <h3 className="text-sm font-semibold text-zinc-900">End of this critique</h3>
+                        <p className="mt-1 text-sm text-zinc-600">
+                          Your full piece was shared from the start, so the reader has already seen all of it. Once
+                          you’ve read their feedback above, that’s the end of this reader–writer exchange on Second
+                          Reader for this piece—there’s nothing more to unlock or decide here.
+                        </p>
+                      </>
+                    )
                   ) : (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <form action={unlockFullPieceForReader.bind(null, assignment.id)}>
-                        <button
-                          type="submit"
-                          className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
-                        >
-                          Continue &amp; share full piece
-                        </button>
-                      </form>
-                      <form action={stopCritiqueWithReader.bind(null, assignment.id)}>
-                        <button
-                          type="submit"
-                          className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
-                        >
-                          Stop here
-                        </button>
-                      </form>
-                    </div>
+                    <>
+                      <h3 className="text-sm font-semibold text-zinc-900">Continue with this reader?</h3>
+                      <p className="mt-1 text-sm text-zinc-600">
+                        Readers only see your first ~3 pages until you choose to share more. If you say{" "}
+                        <span className="font-medium text-zinc-800">Yes</span>, the rest of your manuscript opens to
+                        this reader and they’re notified. If you say <span className="font-medium text-zinc-800">No</span>
+                        , the rest stays private and they’re notified you’re continuing on your own.
+                      </p>
+                      {assignment.readerSeesFullPiece ? (
+                        <p className="mt-3 text-sm text-zinc-600">
+                          {assignment.reader.name} can already see your full manuscript.
+                        </p>
+                      ) : !firstPassComplete ? (
+                        <p className="mt-3 text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
+                      ) : (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <form action={unlockFullPieceForReader.bind(null, assignment.id)}>
+                            <button
+                              type="submit"
+                              className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                            >
+                              Yes
+                            </button>
+                          </form>
+                          <form action={stopCritiqueWithReader.bind(null, assignment.id)}>
+                            <button
+                              type="submit"
+                              className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
+                            >
+                              No
+                            </button>
+                          </form>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
-              ) : null}
-            </div>
+              </>
+            ) : (
+              <p className="mt-4 text-sm text-zinc-600">No feedback yet.</p>
+            )}
           </section>
         </div>
       ) : null}

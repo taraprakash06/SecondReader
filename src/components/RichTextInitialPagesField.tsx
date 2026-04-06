@@ -23,7 +23,7 @@ export function RichTextInitialPagesField() {
 
   return (
     <>
-      <input type="hidden" name="initialPages" defaultValue="" />
+      <input type="hidden" name="fullManuscript" defaultValue="" />
       {!mounted ? (
         <div
           className={SHELL_CLASS}
@@ -33,17 +33,17 @@ export function RichTextInitialPagesField() {
       ) : (
         <div
           ref={editorRef}
-          data-editor="initial-pages"
+          data-editor="full-manuscript"
           contentEditable
           suppressContentEditableWarning
           role="textbox"
           aria-multiline
-          aria-label="Paste your first pages"
+          aria-label="Paste your full manuscript"
           className={`${SHELL_CLASS} focus:border-[color:var(--brand-magenta)]/50 focus:ring-2 focus:ring-[color:var(--brand-magenta)]/20`}
           onPaste={() => {
             window.setTimeout(() => {
               const form = editorRef.current?.closest("form");
-              const hidden = form?.querySelector<HTMLInputElement>("input[name='initialPages']");
+              const hidden = form?.querySelector<HTMLInputElement>("input[name='fullManuscript']");
               if (editorRef.current && hidden) {
                 hidden.value = sanitizeRichText(editorRef.current.innerHTML);
               }
@@ -51,7 +51,7 @@ export function RichTextInitialPagesField() {
           }}
           onInput={() => {
             const form = editorRef.current?.closest("form");
-            const hidden = form?.querySelector<HTMLInputElement>("input[name='initialPages']");
+            const hidden = form?.querySelector<HTMLInputElement>("input[name='fullManuscript']");
             if (editorRef.current && hidden) {
               hidden.value = sanitizeRichText(editorRef.current.innerHTML);
             }

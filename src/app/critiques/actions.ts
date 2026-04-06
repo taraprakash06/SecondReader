@@ -181,7 +181,7 @@ export async function unlockFullPieceForReader(assignmentId: string) {
 
   const assignment = await db.critiqueAssignment.findUnique({
     where: { id: assignmentId },
-    include: { submission: true, feedback: true, reader: true },
+    include: { submission: { include: { writer: true } }, feedback: true, reader: true },
   });
   if (!assignment) throw new Error("Not found.");
   if (assignment.submission.writerId !== userId) throw new Error("Only the writer can share more pages.");
@@ -190,8 +190,12 @@ export async function unlockFullPieceForReader(assignmentId: string) {
     throw new Error("Wait for the reader to mark their first-pass feedback complete.");
   }
   if (!assignment.submission.fullText.trim()) {
-    throw new Error("Add more pages to this submission from your writer dashboard when that’s available.");
+    throw new Error(
+      "There’s no additional text to share—your full manuscript may already be in the first shared pages.",
+    );
   }
+
+  const writerName = assignment.submission.writer.name.trim() || "The writer";
 
   await db.$transaction(async (tx) => {
     await tx.critiqueAssignment.update({
@@ -208,8 +212,8 @@ export async function unlockFullPieceForReader(assignmentId: string) {
       data: {
         userId: assignment.readerId,
         type: "FULL_PIECE_UNLOCKED",
-        title: `Thanks for your feedback on the first pages of “${assignment.submission.title}”`,
-        body: "The writer found your feedback helpful and has shared more of the piece with you to receive your feedback.",
+        title: `${writerName} unlocked the full piece for your feedback`,
+        body: `${writerName} appreciated your feedback on their piece's first three pages, and is unlocking the full piece for you to access and provide feedback on here. Open the critique to see your earlier margin notes on the opening, then the rest of the manuscript below.`,
         relatedAssignmentId: assignment.id,
       },
     });
@@ -248,7 +252,7 @@ export async function stopCritiqueWithReader(assignmentId: string) {
         userId: assignment.readerId,
         type: "CRITIQUE_STOPPED",
         title: `Thanks for your feedback on “${assignment.submission.title}”`,
-        body: `The writer has decided to continue revisions from here on their own, but they appreciated your notes.`,
+        body: `The writer is taking feedback from here on their own. Thanks for your help on the first pages.`,
         relatedAssignmentId: assignment.id,
       },
     });

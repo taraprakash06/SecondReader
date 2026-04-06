@@ -80,7 +80,11 @@ export default async function WriterSubmissionDetailPage({
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-zinc-900">Your initial share (3-page gate)</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">What readers see first (~3 pages)</h2>
+          <p className="mt-1 text-xs text-zinc-600">
+            Your full manuscript is saved on this submission. Only the excerpt below is visible to readers until you
+            unlock the rest from a critique.
+          </p>
           {submission.focusOther ? (
             <p className="mt-3 text-sm leading-6 text-zinc-700">
               <span className="font-medium text-zinc-900">Other focus:</span> {submission.focusOther}

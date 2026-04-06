@@ -136,10 +136,10 @@ export function WriterSubmitFormClient() {
         </label>
 
         <div className="flex flex-col gap-1 text-sm">
-          <span className="font-medium text-zinc-900">Paste your first pages</span>
+          <span className="font-medium text-zinc-900">Paste your full manuscript</span>
           <p className="text-xs text-[color:var(--ink-muted)]">
-            Paste from Word or Google Docs to keep bold, italics, underline, and similar formatting.
-            The initial share is limited to about three pages of text.
+            Paste from Word or Google Docs to keep bold, italics, underline, and similar formatting. Your whole piece
+            is saved here; readers only see the first ~3 pages until you choose to share more after feedback.
           </p>
           <RichTextInitialPagesField />
           <p className="text-xs text-[color:var(--ink-muted)]">
