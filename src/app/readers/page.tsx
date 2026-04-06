@@ -134,7 +134,7 @@ export default async function ReadersPage({
             {r.feedbackSamples[0] ? (
               <div className="mt-5 overflow-hidden rounded-2xl bg-zinc-50 p-[1px]">
                 <div className="bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px]">
-                  <div className="rounded-[15px] bg-[color:var(--paper-2)] p-5">
+                  <div className="rounded-[15px] bg-white p-5">
                     <p className="text-xs font-semibold text-[color:var(--ink)]">Feedback sample (excerpt)</p>
                     <p className="mt-2 text-sm text-[color:var(--ink-muted)]">
                       <span className="font-medium text-[color:var(--ink)]">Strengths:</span>{" "}

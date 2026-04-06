@@ -38,7 +38,7 @@ export function FeedbackSampleComposer({
         defaultMode={defaultMode}
       />
 
-      <div className="rounded-2xl bg-[color:var(--paper-2)] p-4">
+      <div className="rounded-2xl bg-white p-4">
         <p className="text-xs font-semibold text-[color:var(--ink)]">Summary (shown publicly)</p>
         <div className="mt-3 grid gap-3">
           <label className="flex flex-col gap-1 text-sm">

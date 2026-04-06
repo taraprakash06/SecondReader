@@ -245,7 +245,7 @@ export default async function ProfilePage() {
                         }))}
                       />
                     </div>
-                    <div className="mt-4 rounded-2xl bg-[color:var(--paper-2)] p-4">
+                    <div className="mt-4 rounded-2xl bg-white p-4">
                       <p className="text-xs font-semibold text-[color:var(--ink)]">Summary</p>
                       <div className="mt-2 space-y-3 text-sm leading-6 text-[color:var(--ink-muted)]">
                         <div>
