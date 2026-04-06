@@ -13,6 +13,46 @@ export default async function NotificationsPage() {
   const userId = session?.user?.id;
   if (!userId) redirect("/auth/sign-in");
 
+  /** Readers who saved feedback before we auto-marked these notifications. */
+  const staleVolunteer = await db.notification.findMany({
+    where: {
+      userId,
+      type: "VOLUNTEER_ACCEPTED",
+      read: false,
+      relatedAssignmentId: { not: null },
+    },
+    select: { relatedAssignmentId: true },
+  });
+  const staleIds = staleVolunteer
+    .map((n) => n.relatedAssignmentId)
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
+  if (staleIds.length > 0) {
+    const withFeedback = await db.critiqueFeedback.findMany({
+      where: {
+        assignmentId: { in: staleIds },
+        OR: [
+          { strengths: { not: "" } },
+          { improvements: { not: "" } },
+          { keyTakeaways: { not: "" } },
+          { comments: { some: {} } },
+        ],
+      },
+      select: { assignmentId: true },
+    });
+    const doneIds = withFeedback.map((f) => f.assignmentId);
+    if (doneIds.length > 0) {
+      await db.notification.updateMany({
+        where: {
+          userId,
+          type: "VOLUNTEER_ACCEPTED",
+          read: false,
+          relatedAssignmentId: { in: doneIds },
+        },
+        data: { read: true },
+      });
+    }
+  }
+
   const items = await db.notification.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -95,12 +135,24 @@ export default async function NotificationsPage() {
 
               {n.type === "VOLUNTEER_ACCEPTED" && n.relatedAssignmentId ? (
                 <div className="mt-4">
-                  <Link
-                    className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:bg-[color:var(--paper-2)]"
-                    href={`/critiques/${n.relatedAssignmentId}`}
-                  >
-                    Open piece &amp; leave feedback →
-                  </Link>
+                  {n.read ? (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <p className="text-xs font-medium text-emerald-800">Feedback recorded</p>
+                      <Link
+                        className="text-sm font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
+                        href={`/critiques/${n.relatedAssignmentId}`}
+                      >
+                        View critique →
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link
+                      className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:bg-[color:var(--paper-2)]"
+                      href={`/critiques/${n.relatedAssignmentId}`}
+                    >
+                      Open piece &amp; leave feedback →
+                    </Link>
+                  )}
                 </div>
               ) : null}
 

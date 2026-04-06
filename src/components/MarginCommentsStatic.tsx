@@ -5,6 +5,10 @@ import {
   type MarginComment,
 } from "@/lib/margin-comments";
 import { renderWithHighlights } from "@/lib/margin-comments-render";
+import {
+  marginCommentsLayout,
+  type MarginCommentsLayoutVariant,
+} from "@/lib/margin-comments-layout";
 
 function MarginCardDisplay({
   comment,
@@ -51,12 +55,15 @@ export function MarginCommentsStatic({
   comments,
   readerName = "Reader",
   readerInitial,
+  layoutVariant = "default",
 }: {
   text: string;
   comments: MarginComment[];
   readerName?: string;
   readerInitial?: string;
+  layoutVariant?: MarginCommentsLayoutVariant;
 }) {
+  const layout = marginCommentsLayout(layoutVariant);
   const paragraphs = annotateParagraphs(text, comments);
   const initial =
     readerInitial ??
@@ -71,24 +78,19 @@ export function MarginCommentsStatic({
     <div className="mt-0 flex flex-col overflow-hidden rounded-b-xl">
       <div className="divide-y divide-zinc-200/80 bg-zinc-100/50">
         {paragraphs.map((p) => (
-          <div
-            key={p.key}
-            className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(260px,32%)]"
-          >
-            <div className="border-zinc-200 bg-white px-6 py-5 md:border-r md:pr-8">
-              <div className="max-w-[52rem] font-serif text-[15px] leading-[1.75] tracking-[0.01em] text-zinc-900">
-                {renderWithHighlights(p.text, p.annotations)}
-              </div>
+          <div key={p.key} className={layout.rowGrid}>
+            <div className={layout.textCell}>
+              <div className={layout.textInner}>{renderWithHighlights(p.text, p.annotations)}</div>
             </div>
 
-            <div className="flex flex-col gap-3 border-zinc-200 bg-[#eceff2] px-3 py-4 md:border-0">
+            <div className={layout.sidebar}>
               {p.annotations.length === 0 ? (
-                <div className="hidden min-h-[2rem] md:block" aria-hidden />
+                <div className={`hidden min-h-[2rem] ${layout.showEmptyGutter}`} aria-hidden />
               ) : (
                 p.annotations.map((a) => (
                   <div key={a.comment.id} className="relative">
                     <div
-                      className="pointer-events-none absolute -left-2 top-4 hidden h-px w-2 bg-zinc-300 md:block"
+                      className={`pointer-events-none absolute -left-2 top-4 hidden h-px w-2 bg-zinc-300 ${layout.showConnector}`}
                       aria-hidden
                     />
                     <MarginCardDisplay

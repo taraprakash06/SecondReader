@@ -12,7 +12,7 @@ export async function NotificationsLink() {
 
   return (
     <Link
-      className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
+      className="inline-flex h-9 shrink-0 items-center justify-center rounded-xl px-2.5 text-[11px] font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:px-3 sm:text-xs"
       href="/notifications"
     >
       Notifications{unread > 0 ? ` (${unread})` : ""}

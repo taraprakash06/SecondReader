@@ -1,4 +1,5 @@
 import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
+import type { MarginCommentsLayoutVariant } from "@/lib/margin-comments-layout";
 
 type FeedbackLike = {
   strengths: string;
@@ -11,10 +12,12 @@ export function CritiqueFeedbackReview({
   feedback,
   marginAnnotationText,
   readerName,
+  layoutVariant = "wide",
 }: {
   feedback: FeedbackLike;
   marginAnnotationText: string;
   readerName: string;
+  layoutVariant?: MarginCommentsLayoutVariant;
 }) {
   return (
     <div className="space-y-6">
@@ -22,12 +25,12 @@ export function CritiqueFeedbackReview({
         <div>
           <h3 className="text-sm font-semibold text-zinc-900">Margin notes</h3>
           <p className="mt-1 text-xs text-zinc-600">
-            Inline comments from {readerName} on the excerpt (plain text used for highlights matches the shared
-            draft).
+            Inline comments from {readerName} on the excerpt they annotated.
           </p>
           <div className="mt-3 overflow-hidden rounded-2xl border border-zinc-200">
             <MarginCommentsStatic
               text={marginAnnotationText}
+              layoutVariant={layoutVariant}
               comments={feedback.comments.map((c) => ({
                 id: c.id,
                 quote: c.quote,

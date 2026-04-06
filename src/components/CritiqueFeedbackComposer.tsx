@@ -36,10 +36,11 @@ export function CritiqueFeedbackComposer({
     <>
       <div className="space-y-3">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">Margin notes</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">Shared draft — margin notes</h3>
           <p className="mt-1 text-xs text-zinc-600">
-            This panel uses a plain-text copy of the shared draft (and any unlocked pages) so you can select
-            phrases. Add comments or deletion suggestions, then fill out your overall summary below.
+            Select text in the excerpt below (or type a phrase) to add comments or deletion suggestions. Paste from
+            Word may show as plain text—highlights still match the piece. Then add your overall summary under this
+            section.
           </p>
         </div>
         <MarginNotesEditor
@@ -48,10 +49,11 @@ export function CritiqueFeedbackComposer({
           setComments={setComments}
           readerName={readerName}
           readerInitial={readerInitial}
-          heading="Draft excerpt (plain text)"
+          layoutVariant="wide"
+          heading="Your excerpt"
           description={
             <>
-              <span className="font-semibold text-zinc-800">Comment</span>: highlight text and add your note.{" "}
+              <span className="font-semibold text-zinc-800">Comment</span>: highlight in the text and add your note.{" "}
               <span className="font-semibold text-zinc-800">Suggest</span>: mark text to delete — it shows with a green
               strikethrough.
             </>

@@ -55,7 +55,7 @@ export default async function CritiquePage({
   const hasFeedback = !!assignment.feedback;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
@@ -97,84 +97,44 @@ export default async function CritiquePage({
         </p>
       ) : null}
 
-      {/* Reader: still editing — two-column editor */}
+      {/* Reader: still editing — single column: excerpt + margin notes + summary */}
       {isReader && !isComplete ? (
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-zinc-900">Shared draft</h2>
-            <p className="mt-1 text-xs text-zinc-600">Initial pages the writer chose to share first.</p>
-            <p className="mt-2 text-xs text-zinc-500">
-              Use the <span className="font-medium text-zinc-700">Margin notes</span> panel on the right to select
-              phrases—the plain excerpt there matches this draft.
+        <div className="mt-8">
+          <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+            <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
+            <p className="mt-1 text-xs text-zinc-600">
+              Read and annotate the excerpt below (includes any pages the writer unlocked). Save, then mark
+              complete when you’re finished.
             </p>
-            <div className="mt-4">
-              <SubmissionInitialPagesBody content={sub.initialPages} />
-            </div>
-
-            {canSeeFull && sub.fullText.trim() ? (
-              <div className="mt-8 border-t border-zinc-200 pt-8">
-                <h3 className="text-sm font-semibold text-zinc-900">Additional pages</h3>
-                <p className="mt-1 text-xs text-zinc-600">
-                  The writer unlocked the rest of the piece for you.
-                </p>
-                <div className="mt-4">
-                  <SubmissionInitialPagesBody content={sub.fullText} />
-                </div>
-              </div>
-            ) : isReader && sub.fullText.trim() && !assignment.readerSeesFullPiece ? (
-              <p className="mt-6 text-sm text-zinc-600">
-                If the writer likes your feedback, they may unlock more pages here.
+            <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-5 space-y-6">
+              <CritiqueFeedbackComposer
+                draftPlainForMargins={marginAnnotationText}
+                defaultStrengths={assignment.feedback?.strengths ?? ""}
+                defaultImprovements={assignment.feedback?.improvements ?? ""}
+                defaultKeyTakeaways={assignment.feedback?.keyTakeaways ?? ""}
+                defaultComments={defaultMarginComments}
+              />
+              <button
+                type="submit"
+                className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+              >
+                Save feedback
+              </button>
+            </form>
+            {hasFeedback ? <MarkFeedbackCompleteButton assignmentId={assignment.id} /> : null}
+            {sub.fullText.trim() && !assignment.readerSeesFullPiece ? (
+              <p className="mt-6 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
+                If the writer likes your feedback, they may unlock more pages for you on this critique.
               </p>
             ) : null}
-          </section>
-
-          <section className="space-y-6">
-            <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
-              <p className="mt-1 text-xs text-zinc-600">
-                Add inline margin notes and your overall summary—save, then mark complete when you’re finished.
-              </p>
-              <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-4 space-y-6">
-                <CritiqueFeedbackComposer
-                  draftPlainForMargins={marginAnnotationText}
-                  defaultStrengths={assignment.feedback?.strengths ?? ""}
-                  defaultImprovements={assignment.feedback?.improvements ?? ""}
-                  defaultKeyTakeaways={assignment.feedback?.keyTakeaways ?? ""}
-                  defaultComments={defaultMarginComments}
-                />
-                <button
-                  type="submit"
-                  className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
-                >
-                  Save feedback
-                </button>
-              </form>
-              {hasFeedback ? <MarkFeedbackCompleteButton assignmentId={assignment.id} /> : null}
-            </div>
-          </section>
+          </div>
         </div>
       ) : null}
 
-      {/* Reader: completed — stacked read-only */}
+      {/* Reader: completed — single read-only view (draft + margin + summary together) */}
       {isReader && isComplete && hasFeedback && assignment.feedback ? (
-        <div className="mt-8 space-y-8">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-zinc-900">Shared draft</h2>
-            <p className="mt-1 text-xs text-zinc-600">The piece as you read it when you gave feedback.</p>
-            <div className="mt-4">
-              <SubmissionInitialPagesBody content={sub.initialPages} />
-            </div>
-            {canSeeFull && sub.fullText.trim() ? (
-              <div className="mt-8 border-t border-zinc-200 pt-8">
-                <h3 className="text-sm font-semibold text-zinc-900">Additional pages</h3>
-                <div className="mt-4">
-                  <SubmissionInitialPagesBody content={sub.fullText} />
-                </div>
-              </div>
-            ) : null}
-          </section>
-
-          <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mt-8">
+          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
             <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
             <div className="mt-4">
               <CritiqueFeedbackReview
@@ -189,8 +149,8 @@ export default async function CritiquePage({
 
       {/* Writer: view feedback */}
       {isWriter ? (
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:gap-10">
+          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
             <h2 className="text-sm font-semibold text-zinc-900">Your draft</h2>
             <p className="mt-1 text-xs text-zinc-600">Initial pages you shared with this reader.</p>
             <div className="mt-4">

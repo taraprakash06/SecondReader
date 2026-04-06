@@ -2,6 +2,7 @@
 
 import React from "react";
 import { InlineMarginComments } from "@/components/InlineMarginComments";
+import type { MarginCommentsLayoutVariant } from "@/lib/margin-comments-layout";
 
 export type MarginDraftComment = {
   id: string;
@@ -28,6 +29,7 @@ export function MarginNotesEditor({
       strikethrough.
     </>
   ),
+  layoutVariant = "default",
 }: {
   sampleText: string;
   comments: MarginDraftComment[];
@@ -37,6 +39,7 @@ export function MarginNotesEditor({
   defaultMode?: "comment" | "suggest";
   heading?: string;
   description?: React.ReactNode;
+  layoutVariant?: MarginCommentsLayoutVariant;
 }) {
   const [quote, setQuote] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -224,6 +227,7 @@ export function MarginNotesEditor({
           comments={comments}
           readerName={readerName}
           readerInitial={readerInitial}
+          layoutVariant={layoutVariant}
           onRemoveComment={(id) => setComments((prev) => prev.filter((c) => c.id !== id))}
         />
       </div>

@@ -5,6 +5,18 @@ import { CritiqueStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
+/** After the reader saves feedback, clear the “open piece & leave feedback” notification. */
+async function markVolunteerAcceptedNotificationRead(readerId: string, assignmentId: string) {
+  await db.notification.updateMany({
+    where: {
+      userId: readerId,
+      type: "VOLUNTEER_ACCEPTED",
+      relatedAssignmentId: assignmentId,
+    },
+    data: { read: true },
+  });
+}
+
 export async function submitCritiqueFeedback(assignmentId: string, formData: FormData) {
   const session = await auth();
   const userId = session?.user?.id;
@@ -75,8 +87,11 @@ export async function submitCritiqueFeedback(assignmentId: string, formData: For
     });
   }
 
+  await markVolunteerAcceptedNotificationRead(userId, assignment.id);
+
   revalidatePath(`/critiques/${assignmentId}`);
   revalidatePath(`/writer/submissions/${assignment.submissionId}`);
+  revalidatePath("/notifications");
 }
 
 export async function markCritiqueFeedbackComplete(assignmentId: string) {
@@ -124,6 +139,8 @@ export async function markCritiqueFeedbackComplete(assignmentId: string) {
       relatedAssignmentId: assignment.id,
     },
   });
+
+  await markVolunteerAcceptedNotificationRead(userId, assignment.id);
 
   revalidatePath(`/critiques/${assignmentId}`);
   revalidatePath(`/writer/submissions/${assignment.submissionId}`);

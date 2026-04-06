@@ -38,8 +38,8 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Providers session={session}>
           <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/70 backdrop-blur">
-            <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-3">
-              <Link href="/" className="flex items-center gap-3">
+            <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
+              <Link href="/" className="flex min-w-0 shrink-0 items-center gap-3">
                 <div className="relative h-8 w-36">
                   <Image
                     src="/second-reader-logo.svg"
@@ -50,7 +50,7 @@ export default async function RootLayout({
                   />
                 </div>
               </Link>
-              <nav className="flex items-center gap-2">
+              <nav className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-2 gap-y-1.5 sm:flex-none sm:justify-end">
                 <Link
                   className="hidden h-9 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex"
                   href="/pieces"

@@ -9,8 +9,8 @@ export default function WriterLanding() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Writer space</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-          For the MVP, we’ll use a demo writer account. Next you’ll be able to submit your first 3
-          pages and then browse readers by sample and filters.
+          Submit the first 3 pages of your piece and then browse readers by sample and filters to see who can best
+          provide feedback on your work.
         </p>
       </div>
 
