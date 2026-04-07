@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { DraftStage, FeedbackTonePreference } from "@prisma/client";
 import { auth } from "@/lib/auth";
@@ -8,17 +7,8 @@ import { parseWriterFocusAreasJson } from "@/lib/writerFocusAreas";
 import { writerAreaToLegacyFocus } from "@/lib/writerFocusAreasServer";
 import { sanitizeFullManuscript, splitIntoInitialPagesAndFullText } from "@/lib/manuscriptSplit";
 
-export type CreateSubmissionState = { error: string | null };
-
-function isNextRedirectError(e: unknown): boolean {
-  return (
-    typeof e === "object" &&
-    e !== null &&
-    "digest" in e &&
-    typeof (e as { digest: unknown }).digest === "string" &&
-    (e as { digest: string }).digest.startsWith("NEXT_REDIRECT")
-  );
-}
+/** `submissionId` is set on success; client navigates (redirect() + useActionState is unreliable in the browser). */
+export type CreateSubmissionState = { error: string | null; submissionId?: string };
 
 export async function createSubmission(
   _prev: CreateSubmissionState,
@@ -76,9 +66,8 @@ export async function createSubmission(
       },
     });
 
-    redirect(`/writer/submissions/${submission.id}?created=1`);
+    return { error: null, submissionId: submission.id };
   } catch (e) {
-    if (isNextRedirectError(e)) throw e;
     console.error("createSubmission failed:", e);
     const msg =
       e instanceof Error

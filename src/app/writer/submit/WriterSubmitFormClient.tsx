@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { WriterFocusAreasField } from "@/components/WriterFocusAreasField";
 import { WriterSubmitFormShell } from "@/components/WriterSubmitFormShell";
@@ -44,8 +45,15 @@ const STAGE_OPTIONS = [
 const initialSubmissionState: CreateSubmissionState = { error: null };
 
 export function WriterSubmitFormClient() {
+  const router = useRouter();
   const [state, formAction] = useActionState(createSubmission, initialSubmissionState);
   const [clientError, setClientError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (state.submissionId) {
+      router.replace(`/writer/submissions/${state.submissionId}?created=1`);
+    }
+  }, [state.submissionId, router]);
 
   const onBeforeSubmit = useCallback((form: HTMLFormElement) => {
     setClientError(null);
