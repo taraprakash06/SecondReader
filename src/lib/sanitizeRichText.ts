@@ -44,10 +44,28 @@ export function sanitizeRichText(html: string): string {
   return DOMPurify.sanitize(html.trim(), SANITIZE_CONFIG);
 }
 
+/**
+ * Word often wraps every text run in `<span>…</span>`. After stripping attributes those
+ * tags are useless and still multiply payload size (enough to exceed host request limits).
+ */
+export function compactManuscriptHtml(html: string): string {
+  let cur = html.replace(/&nbsp;|&#160;/gi, " ");
+  let prev = "";
+  for (let i = 0; i < 500 && cur !== prev; i++) {
+    prev = cur;
+    cur = cur.replace(/<span\b[^>]*>([\s\S]*?)<\/span>/gi, "$1");
+  }
+  return cur;
+}
+
 /** Use for full-manuscript paste before submit and on the server; keeps structure, drops Word bloat. */
 export function sanitizeManuscriptRichText(html: string): string {
-  return DOMPurify.sanitize(html.trim(), SANITIZE_MANUSCRIPT_PASTE_CONFIG);
+  const sanitized = DOMPurify.sanitize(html.trim(), SANITIZE_MANUSCRIPT_PASTE_CONFIG);
+  return compactManuscriptHtml(sanitized);
 }
+
+/** Safe upper bound for UTF-8 bytes before POST (Vercel ~4.5MB total request; leave margin). */
+export const MAX_MANUSCRIPT_SUBMIT_UTF8_BYTES = 3_200_000;
 
 /** Plain text length after stripping tags (approximate “page” size). */
 export function richTextPlainLength(html: string): number {

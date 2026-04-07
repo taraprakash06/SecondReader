@@ -1,14 +1,16 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { FormHTMLAttributes, ReactNode } from "react";
 import { sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 export function WriterSubmitFormShell({
   action,
+  onBeforeSubmit,
   className,
   children,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: FormHTMLAttributes<HTMLFormElement>["action"];
+  onBeforeSubmit?: (form: HTMLFormElement) => boolean;
   className?: string;
   children: ReactNode;
 }) {
@@ -23,6 +25,9 @@ export function WriterSubmitFormShell({
         const hidden = form.querySelector<HTMLInputElement>("input[name='fullManuscript']");
         if (editor && hidden) {
           hidden.value = sanitizeManuscriptRichText(editor.innerHTML);
+        }
+        if (onBeforeSubmit && !onBeforeSubmit(form)) {
+          e.preventDefault();
         }
       }}
     >

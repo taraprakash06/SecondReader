@@ -1,10 +1,12 @@
 "use client";
 
+import { useActionState, useCallback, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { WriterFocusAreasField } from "@/components/WriterFocusAreasField";
 import { WriterSubmitFormShell } from "@/components/WriterSubmitFormShell";
 import { RichTextInitialPagesField } from "@/components/RichTextInitialPagesField";
-import { createSubmission } from "./actions";
+import { MAX_MANUSCRIPT_SUBMIT_UTF8_BYTES } from "@/lib/sanitizeRichText";
+import { createSubmission, type CreateSubmissionState } from "./actions";
 
 function CreateSubmissionButton() {
   const { pending } = useFormStatus();
@@ -39,13 +41,43 @@ const STAGE_OPTIONS = [
   { id: "PRE_SUBMISSION", label: "Pre-submission" },
 ] as const;
 
+const initialSubmissionState: CreateSubmissionState = { error: null };
+
 export function WriterSubmitFormClient() {
+  const [state, formAction] = useActionState(createSubmission, initialSubmissionState);
+  const [clientError, setClientError] = useState<string | null>(null);
+
+  const onBeforeSubmit = useCallback((form: HTMLFormElement) => {
+    setClientError(null);
+    const hidden = form.querySelector<HTMLInputElement>("input[name='fullManuscript']");
+    const raw = hidden?.value ?? "";
+    const bytes = new TextEncoder().encode(raw).length;
+    if (bytes > MAX_MANUSCRIPT_SUBMIT_UTF8_BYTES) {
+      setClientError(
+        "Your manuscript is still too large to send (heavy Word or Docs formatting). Copy into a plain-text editor, paste back here, or paste a shorter sample.",
+      );
+      return false;
+    }
+    return true;
+  }, []);
+
+  const displayError = clientError ?? state.error;
+
   return (
     <WriterSubmitFormShell
-      action={createSubmission}
+      action={formAction}
+      onBeforeSubmit={onBeforeSubmit}
       className="mt-8 grid gap-4 rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm"
     >
       <div className="grid gap-4 rounded-[23px] border border-zinc-200 bg-white/90 p-6 backdrop-blur">
+        {displayError ? (
+          <p
+            className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900"
+            role="alert"
+          >
+            {displayError}
+          </p>
+        ) : null}
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium">Title</span>

@@ -68,7 +68,7 @@ export function splitIntoInitialPagesAndFullText(html: string): {
     return { initialPages: html, fullText: "" };
   }
 
-  const blocks = [...html.matchAll(/<p\b[^>]*>[\s\S]*?<\/p>/gi)].map((m) => m[0]);
+  const blocks = segmentHtmlIntoBlocks(html);
   if (blocks.length === 0) {
     return splitOversizeBlockByWords(html, "");
   }
@@ -94,6 +94,36 @@ export function splitIntoInitialPagesAndFullText(html: string): {
   const initialPages = initialBlocks.join("");
   const fullText = blocks.slice(i).join("");
   return { initialPages, fullText };
+}
+
+/**
+ * Prefer `<p>` blocks; otherwise use sibling `<div>` segments (common Word paste).
+ * Falls back to [] so callers use word-based split.
+ */
+function segmentHtmlIntoBlocks(html: string): string[] {
+  const trimmed = html.trim();
+  const pBlocks = [...trimmed.matchAll(/<p\b[^>]*>[\s\S]*?<\/p>/gi)].map((m) => m[0]);
+  if (pBlocks.length > 0) {
+    const joined = pBlocks.join("");
+    if (joined.length >= trimmed.length * 0.5 || pBlocks.length >= 2) {
+      return pBlocks;
+    }
+  }
+
+  const divBlocks = [...trimmed.matchAll(/<div\b[^>]*>[\s\S]*?<\/div>/gi)].map((m) => m[0]);
+  if (divBlocks.length === 0) return [];
+
+  const coverage = divBlocks.reduce((sum, b) => sum + b.length, 0);
+  if (coverage < trimmed.length * 0.72) return [];
+
+  if (divBlocks.length === 1) {
+    const inner = divBlocks[0].replace(/^<div\b[^>]*>/i, "").replace(/<\/div>\s*$/i, "");
+    if (inner.length < divBlocks[0].length * 0.55) return [divBlocks[0]];
+    const innerSeg = segmentHtmlIntoBlocks(inner);
+    return innerSeg.length > 0 ? innerSeg : [divBlocks[0]];
+  }
+
+  return divBlocks;
 }
 
 function splitOversizeBlockByWords(firstBlockHtml: string, followingHtml: string): {
