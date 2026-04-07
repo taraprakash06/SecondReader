@@ -30,8 +30,23 @@ const SANITIZE_CONFIG: Config = {
   ALLOW_DATA_ATTR: false,
 };
 
+/**
+ * Same tags as {@link sanitizeRichText}, but strips `class` and `style`.
+ * Word/Google Docs paste otherwise multiplies payload size (often >1MB for a few pages)
+ * and trips Server Action body limits.
+ */
+const SANITIZE_MANUSCRIPT_PASTE_CONFIG: Config = {
+  ...SANITIZE_CONFIG,
+  ALLOWED_ATTR: [],
+};
+
 export function sanitizeRichText(html: string): string {
   return DOMPurify.sanitize(html.trim(), SANITIZE_CONFIG);
+}
+
+/** Use for full-manuscript paste before submit and on the server; keeps structure, drops Word bloat. */
+export function sanitizeManuscriptRichText(html: string): string {
+  return DOMPurify.sanitize(html.trim(), SANITIZE_MANUSCRIPT_PASTE_CONFIG);
 }
 
 /** Plain text length after stripping tags (approximate “page” size). */

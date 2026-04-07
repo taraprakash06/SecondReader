@@ -11,6 +11,7 @@ export function CritiqueFeedbackComposer({
   defaultKeyTakeaways,
   defaultComments,
   fullPieceUnlocked = false,
+  firstReadIsWholePiece = false,
 }: {
   draftPlainForMargins: string;
   defaultStrengths: string;
@@ -19,6 +20,8 @@ export function CritiqueFeedbackComposer({
   defaultComments: MarginDraftComment[];
   /** When true, reader has the full manuscript after writer unlock; prior notes on the opening are preserved. */
   fullPieceUnlocked?: boolean;
+  /** When true, the first-read text is the writer's entire submission (no extended portion). */
+  firstReadIsWholePiece?: boolean;
 }) {
   const { data: session } = useSession();
   const readerName = session?.user?.name?.trim() || "You";
@@ -35,12 +38,14 @@ export function CritiqueFeedbackComposer({
   const [improvements, setImprovements] = React.useState(defaultImprovements);
   const [keyTakeaways, setKeyTakeaways] = React.useState(defaultKeyTakeaways);
 
+  const fullManuscriptLabels = fullPieceUnlocked || firstReadIsWholePiece;
+
   return (
     <>
       <div className="space-y-3">
         <div>
           <h3 className="text-sm font-semibold text-zinc-900">
-            {fullPieceUnlocked ? "Full manuscript — margin notes" : "Shared draft — margin notes"}
+            {fullManuscriptLabels ? "Full manuscript — margin notes" : "Shared draft — margin notes"}
           </h3>
           <p className="mt-1 text-xs text-zinc-600">
             {fullPieceUnlocked ? (
@@ -48,6 +53,12 @@ export function CritiqueFeedbackComposer({
                 The opening includes your <span className="font-medium text-zinc-800">saved</span> margin notes from
                 the first pass. After the divider line, continue annotating the rest of the piece the same way. Update
                 your summary below to reflect feedback on the full manuscript when you’re ready.
+              </>
+            ) : firstReadIsWholePiece ? (
+              <>
+                This is the writer&apos;s <span className="font-medium text-zinc-800">complete</span> submission—
+                everything they shared is below, with nothing more to unlock. Select text to add comments or deletion
+                suggestions, then add your overall summary. When you&apos;re done, mark the critique complete.
               </>
             ) : (
               <>
@@ -65,7 +76,7 @@ export function CritiqueFeedbackComposer({
           readerName={readerName}
           readerInitial={readerInitial}
           layoutVariant="wide"
-          heading={fullPieceUnlocked ? "Full manuscript" : "Your excerpt"}
+          heading={fullManuscriptLabels ? "Full manuscript" : "Your excerpt"}
           description={
             <>
               <span className="font-semibold text-zinc-800">Comment</span>: highlight in the text and add your note.{" "}
@@ -79,7 +90,7 @@ export function CritiqueFeedbackComposer({
       <div className="mt-6 border-t border-zinc-200 pt-6">
         <h3 className="text-sm font-semibold text-zinc-900">Your feedback summary</h3>
         <p className="mt-1 text-xs text-zinc-600">
-          {fullPieceUnlocked
+          {fullManuscriptLabels
             ? "Overall strengths, improvements, and takeaways for the whole piece—alongside all margin notes above."
             : "Overall strengths, improvements, and takeaways—alongside any margin notes above."}
         </p>

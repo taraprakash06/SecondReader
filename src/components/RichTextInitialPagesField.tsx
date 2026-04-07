@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useSyncExternalStore } from "react";
-import { sanitizeRichText } from "@/lib/sanitizeRichText";
+import { sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 const SHELL_CLASS =
   "min-h-[280px] rounded-2xl border border-zinc-200 bg-white p-3 text-sm leading-6 text-[color:var(--ink)] outline-none focus-within:border-[color:var(--brand-magenta)]/50 focus-within:ring-2 focus-within:ring-[color:var(--brand-magenta)]/20 [&_b]:font-semibold [&_em]:italic [&_i]:italic [&_strong]:font-semibold [&_u]:underline";
@@ -45,7 +45,7 @@ export function RichTextInitialPagesField() {
               const form = editorRef.current?.closest("form");
               const hidden = form?.querySelector<HTMLInputElement>("input[name='fullManuscript']");
               if (editorRef.current && hidden) {
-                hidden.value = sanitizeRichText(editorRef.current.innerHTML);
+                hidden.value = sanitizeManuscriptRichText(editorRef.current.innerHTML);
               }
             }, 0);
           }}
@@ -53,7 +53,7 @@ export function RichTextInitialPagesField() {
             const form = editorRef.current?.closest("form");
             const hidden = form?.querySelector<HTMLInputElement>("input[name='fullManuscript']");
             if (editorRef.current && hidden) {
-              hidden.value = sanitizeRichText(editorRef.current.innerHTML);
+              hidden.value = sanitizeManuscriptRichText(editorRef.current.innerHTML);
             }
           }}
         />

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { sanitizeRichText } from "@/lib/sanitizeRichText";
+import { sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 export function WriterSubmitFormShell({
   action,
@@ -22,7 +22,7 @@ export function WriterSubmitFormShell({
         const editor = form.querySelector<HTMLDivElement>("[data-editor='full-manuscript']");
         const hidden = form.querySelector<HTMLInputElement>("input[name='fullManuscript']");
         if (editor && hidden) {
-          hidden.value = sanitizeRichText(editor.innerHTML);
+          hidden.value = sanitizeManuscriptRichText(editor.innerHTML);
         }
       }}
     >

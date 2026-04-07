@@ -1,4 +1,4 @@
-import { richTextPlainLength, sanitizeRichText } from "@/lib/sanitizeRichText";
+import { richTextPlainLength, sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 /**
  * Approximate manuscript pages (prose). Midpoint of 250–300 words/page.
@@ -35,7 +35,7 @@ export function wordCountFromHtml(html: string): number {
  * Sanitize pasted HTML for a full manuscript; enforce generous upper bounds.
  */
 export function sanitizeFullManuscript(raw: string): string {
-  const html = sanitizeRichText(raw);
+  const html = sanitizeManuscriptRichText(raw);
   if (!html.trim()) {
     throw new Error("Please paste your full manuscript.");
   }

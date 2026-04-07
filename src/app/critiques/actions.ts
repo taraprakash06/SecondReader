@@ -131,23 +131,47 @@ export async function markCritiqueFeedbackComplete(assignmentId: string) {
     throw new Error("Add at least one margin note or summary field before marking complete.");
   }
 
-  if (!assignment.firstPassComplete) {
-    await db.critiqueAssignment.update({
-      where: { id: assignmentId },
-      data: { firstPassComplete: true, firstPassCompletedAt: new Date() },
-    });
+  const hasExtendedManuscript = assignment.submission.fullText.trim().length > 0;
 
-    await db.notification.create({
-      data: {
-        userId: assignment.submission.writerId,
-        type: "CRITIQUE_FIRST_PASS_COMPLETE",
-        title: `${assignment.reader.name} finished feedback on your first pages`,
-        body: "Read their notes, then decide whether to continue and share the full piece.",
-        relatedAssignmentId: assignment.id,
-      },
-    });
+  if (!assignment.firstPassComplete) {
+    if (!hasExtendedManuscript) {
+      // Whole manuscript fits the first read (~≤3 pages): one step—no unlock phase.
+      await db.critiqueAssignment.update({
+        where: { id: assignmentId },
+        data: {
+          firstPassComplete: true,
+          firstPassCompletedAt: new Date(),
+          status: CritiqueStatus.COMPLETED,
+        },
+      });
+
+      await db.notification.create({
+        data: {
+          userId: assignment.submission.writerId,
+          type: "CRITIQUE_FULL_PIECE_COMPLETE",
+          title: `${assignment.reader.name} finished their critique on “${assignment.submission.title}”`,
+          body: "They read and commented on your full piece—open your critique to read their margin notes and summary.",
+          relatedAssignmentId: assignment.id,
+        },
+      });
+    } else {
+      await db.critiqueAssignment.update({
+        where: { id: assignmentId },
+        data: { firstPassComplete: true, firstPassCompletedAt: new Date() },
+      });
+
+      await db.notification.create({
+        data: {
+          userId: assignment.submission.writerId,
+          type: "CRITIQUE_FIRST_PASS_COMPLETE",
+          title: `${assignment.reader.name} finished feedback on your first pages`,
+          body: "Read their notes, then decide whether to continue and share the full piece.",
+          relatedAssignmentId: assignment.id,
+        },
+      });
+    }
   } else {
-    if (!assignment.readerSeesFullPiece) {
+    if (hasExtendedManuscript && !assignment.readerSeesFullPiece) {
       throw new Error("Wait for the writer to unlock the full piece before marking the full critique complete.");
     }
 

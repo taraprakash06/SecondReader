@@ -52,11 +52,12 @@ export default async function CritiquePage({
   const isStopped = assignment.status === CritiqueStatus.STOPPED;
   const firstPassComplete = assignment.firstPassComplete;
   const hasFeedback = !!assignment.feedback;
+  const submissionHasExtendedPortion = sub.fullText.trim().length > 0;
 
   const readerHasFullManuscriptUnlocked =
     isReader &&
     assignment.readerSeesFullPiece &&
-    sub.fullText.trim().length > 0 &&
+    submissionHasExtendedPortion &&
     !isComplete &&
     !isStopped;
 
@@ -116,8 +117,18 @@ export default async function CritiquePage({
 
       {isReader && isComplete ? (
         <p className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
-          <span className="font-semibold">You marked the full critique complete.</span> The writer has been
-          notified. Your notes below are read-only.
+          {submissionHasExtendedPortion ? (
+            <>
+              <span className="font-semibold">You marked the full critique complete.</span> The writer has been
+              notified. Your notes below are read-only.
+            </>
+          ) : (
+            <>
+              <span className="font-semibold">You marked this critique complete.</span> You were reading the
+              writer&apos;s entire piece—there&apos;s no remainder to wait for. The writer has been notified. Your notes
+              below are read-only.
+            </>
+          )}
         </p>
       ) : null}
 
@@ -134,6 +145,12 @@ export default async function CritiquePage({
                   pages—add more notes on the remainder. Save often, then mark the full critique complete when
                   you&apos;re finished.
                 </>
+              ) : !submissionHasExtendedPortion ? (
+                <>
+                  You&apos;re critiquing the writer&apos;s <span className="font-medium">full</span> manuscript below—
+                  this submission fits in the first read, so nothing more will unlock. Save often, then mark critique
+                  complete when you&apos;re finished.
+                </>
               ) : (
                 <>
                   Read and annotate the excerpt below (first ~3 pages). Save often. Mark the first pass complete when
@@ -147,6 +164,11 @@ export default async function CritiquePage({
                 <span className="font-semibold">Full piece unlocked.</span> Your first-pass notes and summary are kept;
                 extend them for the full manuscript.
               </p>
+            ) : !submissionHasExtendedPortion ? (
+              <p className="mt-3 rounded-xl border border-emerald-200/90 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-950">
+                <span className="font-semibold">Full piece.</span> What you see is the entire submission—annotate here,
+                then mark critique complete when you&apos;re done.
+              </p>
             ) : null}
             <form action={submitCritiqueFeedback.bind(null, assignment.id)} className="mt-5 space-y-6">
               <CritiqueFeedbackComposer
@@ -156,6 +178,7 @@ export default async function CritiquePage({
                 defaultKeyTakeaways={assignment.feedback?.keyTakeaways ?? ""}
                 defaultComments={defaultMarginComments}
                 fullPieceUnlocked={readerHasFullManuscriptUnlocked}
+                firstReadIsWholePiece={!submissionHasExtendedPortion}
               />
               <button
                 type="submit"
@@ -169,14 +192,15 @@ export default async function CritiquePage({
                 assignmentId={assignment.id}
                 firstPassComplete={firstPassComplete}
                 readerSeesFullPiece={assignment.readerSeesFullPiece}
+                submissionHasExtendedPortion={submissionHasExtendedPortion}
               />
             ) : null}
-            {firstPassComplete && !assignment.readerSeesFullPiece ? (
+            {firstPassComplete && !assignment.readerSeesFullPiece && submissionHasExtendedPortion ? (
               <p className="mt-6 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
                 Waiting for the writer’s decision. If they continue with you, the full piece will appear here.
               </p>
             ) : null}
-            {sub.fullText.trim() && !assignment.readerSeesFullPiece ? (
+            {submissionHasExtendedPortion && !assignment.readerSeesFullPiece ? (
               <p className="mt-6 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
                 If the writer likes your feedback, they may unlock more pages for you on this critique.
               </p>
