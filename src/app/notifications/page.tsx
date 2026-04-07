@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CritiqueStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { acceptReaderInvite, declineReaderInvite } from "@/app/notifications/actions";
@@ -47,6 +48,41 @@ export default async function NotificationsPage() {
           type: "VOLUNTEER_ACCEPTED",
           read: false,
           relatedAssignmentId: { in: doneIds },
+        },
+        data: { read: true },
+      });
+    }
+  }
+
+  /** Readers who finished the full critique before we auto-marked FULL_PIECE_UNLOCKED. */
+  const staleFullUnlock = await db.notification.findMany({
+    where: {
+      userId,
+      type: "FULL_PIECE_UNLOCKED",
+      read: false,
+      relatedAssignmentId: { not: null },
+    },
+    select: { relatedAssignmentId: true },
+  });
+  const staleUnlockIds = staleFullUnlock
+    .map((n) => n.relatedAssignmentId)
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
+  if (staleUnlockIds.length > 0) {
+    const completedUnlock = await db.critiqueAssignment.findMany({
+      where: {
+        id: { in: staleUnlockIds },
+        status: CritiqueStatus.COMPLETED,
+      },
+      select: { id: true },
+    });
+    const doneUnlockIds = completedUnlock.map((a) => a.id);
+    if (doneUnlockIds.length > 0) {
+      await db.notification.updateMany({
+        where: {
+          userId,
+          type: "FULL_PIECE_UNLOCKED",
+          read: false,
+          relatedAssignmentId: { in: doneUnlockIds },
         },
         data: { read: true },
       });
@@ -169,12 +205,24 @@ export default async function NotificationsPage() {
 
               {n.type === "FULL_PIECE_UNLOCKED" && n.relatedAssignmentId ? (
                 <div className="mt-4">
-                  <Link
-                    className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
-                    href={`/critiques/${n.relatedAssignmentId}`}
-                  >
-                    Open full manuscript &amp; critique →
-                  </Link>
+                  {n.read ? (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <p className="text-xs font-medium text-emerald-800">Feedback recorded</p>
+                      <Link
+                        className="text-sm font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
+                        href={`/critiques/${n.relatedAssignmentId}`}
+                      >
+                        View full manuscript &amp; critique →
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link
+                      className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                      href={`/critiques/${n.relatedAssignmentId}`}
+                    >
+                      Open full manuscript &amp; critique →
+                    </Link>
+                  )}
                 </div>
               ) : null}
 

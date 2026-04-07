@@ -17,10 +17,7 @@ export default function Home() {
                 className="object-contain object-left"
               />
             </div>
-            <div className="min-w-0 max-w-full overflow-x-auto sm:pt-1">
-              <p className="whitespace-nowrap text-sm font-medium text-[color:var(--ink-muted)]">
-                A digital meet-up space where writers find critique partners and second readers they trust.
-              </p>
+            <div className="min-w-0 max-w-full sm:pt-1">
               <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Second Reader
               </h1>
@@ -31,6 +28,9 @@ export default function Home() {
             Find readers you trust based on their feedback samples. You upload your full manuscript; readers only see
             your first ~3 pages until you choose to share more. If their feedback is helpful, you can open the rest
             of your piece to them. Readers are limited to a few active critiques so every piece gets real attention.
+          </p>
+          <p className="max-w-2xl text-base font-medium leading-7 text-[color:var(--ink)]">
+            Most people here are both writers and readers — you can do both.
           </p>
         </div>
 

@@ -17,6 +17,18 @@ async function markVolunteerAcceptedNotificationRead(readerId: string, assignmen
   });
 }
 
+/** After the reader marks the full critique complete, clear the “full piece unlocked” notification. */
+async function markFullPieceUnlockedNotificationRead(readerId: string, assignmentId: string) {
+  await db.notification.updateMany({
+    where: {
+      userId: readerId,
+      type: "FULL_PIECE_UNLOCKED",
+      relatedAssignmentId: assignmentId,
+    },
+    data: { read: true },
+  });
+}
+
 export async function submitCritiqueFeedback(assignmentId: string, formData: FormData) {
   const session = await auth();
   const userId = session?.user?.id;
@@ -192,6 +204,14 @@ export async function markCritiqueFeedbackComplete(assignmentId: string) {
   }
 
   await markVolunteerAcceptedNotificationRead(userId, assignment.id);
+
+  const afterMark = await db.critiqueAssignment.findUnique({
+    where: { id: assignmentId },
+    select: { status: true },
+  });
+  if (afterMark?.status === CritiqueStatus.COMPLETED) {
+    await markFullPieceUnlockedNotificationRead(userId, assignment.id);
+  }
 
   revalidatePath(`/critiques/${assignmentId}`);
   revalidatePath(`/writer/submissions/${assignment.submissionId}`);
