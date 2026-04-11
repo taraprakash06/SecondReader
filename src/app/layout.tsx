@@ -21,6 +21,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Second Reader",
   description: "Second Reader helps writers find trusted critique partners and build lasting relationships.",
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    shortcut: "/icon.png",
+  },
 };
 
 export default async function RootLayout({
