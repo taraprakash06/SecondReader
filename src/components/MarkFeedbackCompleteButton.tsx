@@ -32,7 +32,7 @@ export function MarkFeedbackCompleteButton({
         : "Waiting for full piece…";
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-4 py-3">
+    <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-4 py-4">
       <p className="text-sm font-medium text-zinc-900">Done with this critique?</p>
       <p className="mt-1 text-xs text-zinc-600">
         {!submissionHasExtendedPortion ? (
@@ -71,7 +71,7 @@ export function MarkFeedbackCompleteButton({
             }
           });
         }}
-        className={`mt-3 inline-flex h-10 items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-900 shadow-sm ${
+        className={`mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 text-base font-semibold text-zinc-900 shadow-sm sm:w-auto sm:min-h-10 sm:text-sm ${
           pending || waitingForUnlock ? "cursor-not-allowed opacity-80" : "hover:bg-zinc-50"
         }`}
       >

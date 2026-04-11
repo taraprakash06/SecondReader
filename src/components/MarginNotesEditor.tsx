@@ -130,7 +130,7 @@ export function MarginNotesEditor({
             <button
               type="button"
               onClick={() => setModeAndReset("comment")}
-              className={`rounded-md px-3 py-1.5 transition ${
+              className={`min-h-10 min-w-[5.5rem] rounded-md px-3 py-2 transition md:min-h-0 md:min-w-0 md:py-1.5 ${
                 mode === "comment"
                   ? "bg-amber-100 text-zinc-900 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-800"
@@ -141,7 +141,7 @@ export function MarginNotesEditor({
             <button
               type="button"
               onClick={() => setModeAndReset("suggest")}
-              className={`rounded-md px-3 py-1.5 transition ${
+              className={`min-h-10 min-w-[5.5rem] rounded-md px-3 py-2 transition md:min-h-0 md:min-w-0 md:py-1.5 ${
                 mode === "suggest"
                   ? "bg-emerald-100 text-zinc-900 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-800"
@@ -174,7 +174,7 @@ export function MarginNotesEditor({
               <button
                 type="button"
                 onClick={useSelectionAsQuote}
-                className="h-8 rounded-lg bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-3 text-xs font-semibold text-white shadow-sm hover:opacity-95"
+                className="min-h-10 rounded-lg bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-3 text-sm font-semibold text-white shadow-sm hover:opacity-95 md:h-8 md:text-xs"
               >
                 + Add to margin
               </button>
@@ -194,7 +194,7 @@ export function MarginNotesEditor({
           <input
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
-            className="h-9 rounded-lg border border-zinc-200 bg-zinc-50/80 px-3 text-sm text-zinc-900 focus:border-amber-400/80 focus:outline-none focus:ring-1 focus:ring-amber-400/40"
+            className="min-h-11 rounded-lg border border-zinc-200 bg-zinc-50/80 px-3 text-base text-zinc-900 focus:border-amber-400/80 focus:outline-none focus:ring-1 focus:ring-amber-400/40 md:min-h-9 md:text-sm"
             placeholder={mode === "suggest" ? "Text to strike through / delete…" : "Phrase you’re responding to…"}
           />
         </label>
@@ -207,14 +207,14 @@ export function MarginNotesEditor({
                 ref={messageInputRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="h-9 rounded-lg border border-zinc-200 bg-zinc-50/80 px-3 text-sm text-zinc-900 focus:border-sky-400/80 focus:outline-none focus:ring-1 focus:ring-sky-400/40"
+                className="min-h-11 rounded-lg border border-zinc-200 bg-zinc-50/80 px-3 text-base text-zinc-900 focus:border-sky-400/80 focus:outline-none focus:ring-1 focus:ring-sky-400/40 md:min-h-9 md:text-sm"
                 placeholder="What would you tell the writer?"
               />
             </label>
             <button
               type="button"
               onClick={addComment}
-              className="h-9 shrink-0 rounded-lg bg-zinc-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-zinc-800"
+              className="min-h-11 w-full shrink-0 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 sm:w-auto md:min-h-9 md:text-xs"
             >
               Add to margin
             </button>
@@ -229,7 +229,7 @@ export function MarginNotesEditor({
               <button
                 type="button"
                 onClick={addComment}
-                className="h-9 rounded-lg bg-zinc-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-zinc-800"
+                className="min-h-11 w-full rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 sm:w-auto md:min-h-9 md:text-xs"
               >
                 Add deletion to margin
               </button>

@@ -18,7 +18,7 @@ export default async function SignInPage({
   if (session?.user?.id) redirect(destination);
 
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-16">
+    <div className="mx-auto w-full max-w-md px-4 py-12 sm:px-6 sm:py-16">
       <div className="flex flex-col gap-2">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"

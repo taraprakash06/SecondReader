@@ -4,7 +4,7 @@ import { useRef, useSyncExternalStore } from "react";
 import { sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 const SHELL_CLASS =
-  "min-h-[280px] rounded-2xl border border-zinc-200 bg-white p-3 text-sm leading-6 text-[color:var(--ink)] outline-none focus-within:border-[color:var(--brand-magenta)]/50 focus-within:ring-2 focus-within:ring-[color:var(--brand-magenta)]/20 [&_b]:font-semibold [&_em]:italic [&_i]:italic [&_strong]:font-semibold [&_u]:underline";
+  "min-h-[240px] min-w-0 overflow-x-hidden break-words rounded-2xl border border-zinc-200 bg-white p-3 text-base leading-[1.65] text-[color:var(--ink)] outline-none focus-within:border-[color:var(--brand-magenta)]/50 focus-within:ring-2 focus-within:ring-[color:var(--brand-magenta)]/20 sm:min-h-[280px] sm:text-sm sm:leading-6 [&_b]:font-semibold [&_em]:italic [&_i]:italic [&_strong]:font-semibold [&_u]:underline [overflow-wrap:anywhere]";
 
 /**
  * Rich-text area for pasted prose. Browser paste preserves bold/italic/underline

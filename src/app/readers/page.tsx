@@ -34,7 +34,7 @@ export default async function ReadersPage({
 
   if (!session?.user?.id) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-6 py-12">
+      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex flex-col gap-2">
           <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
             ← Home
@@ -88,25 +88,25 @@ export default async function ReadersPage({
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-12">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
           ← Home
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Browse readers</h1>
-        <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
+        <p className="text-sm leading-relaxed text-[color:var(--ink-muted)] sm:leading-6">
           Readers are shown with a public feedback sample (required). Filter by age category
           and search by name/genres/values.
         </p>
       </div>
 
-      <form className="mt-8 grid gap-3 rounded-2xl border border-zinc-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:grid-cols-3">
-        <label className="flex flex-col gap-1 text-sm">
+      <form className="mt-6 grid gap-4 rounded-2xl border border-zinc-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:mt-8 md:grid-cols-3">
+        <label className="flex flex-col gap-1.5 text-sm">
           <span className="font-medium">Age category</span>
           <select
             name="age"
             defaultValue={age}
-            className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-purple)]/50 focus:outline-none"
+            className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-purple)]/50 focus:outline-none md:min-h-10 md:text-sm"
           >
             {ageOptions.map((o) => (
               <option key={o.id} value={o.id}>
@@ -116,48 +116,51 @@ export default async function ReadersPage({
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
+        <label className="flex flex-col gap-1.5 text-sm md:col-span-2">
           <span className="font-medium">Search</span>
           <input
             name="q"
             defaultValue={q}
             placeholder="e.g., poetry, pacing, line edits"
-            className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+            className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:min-h-10 md:text-sm"
           />
         </label>
 
-        <div className="sm:col-span-3">
-          <button className="h-10 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-medium text-white shadow-sm hover:opacity-95">
+        <div className="md:col-span-3">
+          <button
+            type="submit"
+            className="min-h-11 w-full rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm hover:opacity-95 sm:w-auto sm:text-sm"
+          >
             Apply filters
           </button>
         </div>
       </form>
 
-      <div className="mt-8 grid gap-4">
+      <div className="mt-6 grid gap-4 sm:mt-8">
         {readers.map((r) => (
           <div
             key={r.id}
-            className="rounded-2xl border border-zinc-200 bg-white/95 p-6 shadow-sm backdrop-blur"
+            className="w-full max-w-full rounded-2xl border border-zinc-200 bg-white/95 p-4 shadow-sm backdrop-blur sm:p-6"
           >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 sm:pr-4">
-                <h2 className="text-lg font-semibold">{r.user.name}</h2>
-                <p className="text-sm text-[color:var(--ink-muted)]">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+              <div className="min-w-0 space-y-2 sm:pr-4">
+                <h2 className="text-lg font-semibold leading-snug">{r.user.name}</h2>
+                <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">
                   <span className="font-medium text-[color:var(--ink)]">Genres:</span>{" "}
-                  {r.genres || "—"}
+                  <span className="break-words">{r.genres || "—"}</span>
                 </p>
-                <p className="text-sm text-[color:var(--ink-muted)]">
+                <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">
                   <span className="font-medium text-[color:var(--ink)]">Cares about:</span>{" "}
-                  {r.caresAbout || "—"}
+                  <span className="break-words">{r.caresAbout || "—"}</span>
                 </p>
-                <p className="text-sm text-[color:var(--ink-muted)]">
+                <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">
                   <span className="font-medium text-[color:var(--ink)]">Philosophy:</span>{" "}
-                  {r.feedbackPhilosophy || "—"}
+                  <span className="break-words">{r.feedbackPhilosophy || "—"}</span>
                 </p>
               </div>
 
               <Link
-                className="mt-3 inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)] sm:mt-0 sm:self-start"
+                className="inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)] sm:mt-0 sm:w-auto sm:self-start"
                 href={`/readers/${r.userId}`}
               >
                 View sample →

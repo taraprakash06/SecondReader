@@ -112,7 +112,7 @@ export default async function ReaderOnboardingPage() {
 
   if (!samplePiece) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-6 py-12">
+      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
           href="/reader"
@@ -127,7 +127,7 @@ export default async function ReaderOnboardingPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-12">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"

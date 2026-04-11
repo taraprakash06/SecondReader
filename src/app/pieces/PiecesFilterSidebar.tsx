@@ -30,9 +30,9 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
   const genreDefault = (SUBMISSION_GENRE_OPTIONS as readonly string[]).includes(query.genre) ? query.genre : "";
 
   return (
-    <aside className="lg:sticky lg:top-24">
+    <aside className="w-full min-w-0 lg:sticky lg:top-24">
       <div className="rounded-2xl border border-zinc-200 bg-white/95 p-4 shadow-sm backdrop-blur sm:p-5">
-        <h2 className="text-sm font-semibold text-[color:var(--ink)]">Filter &amp; sort</h2>
+        <h2 className="text-base font-semibold text-[color:var(--ink)] sm:text-sm">Filter &amp; sort</h2>
         <p className="mt-1 text-xs leading-relaxed text-[color:var(--ink-muted)]">
           Narrow listings by genre, length, feedback focus, and draft stage. Sort changes the order of results.
         </p>
@@ -43,7 +43,7 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             <select
               name="genre"
               defaultValue={genreDefault}
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+              className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30 md:min-h-9 md:text-sm"
             >
               <option value="">Any genre</option>
               {SUBMISSION_GENRE_OPTIONS.map((g) => (
@@ -62,7 +62,7 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             <select
               name="length"
               defaultValue={lengthValue}
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+              className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30 md:min-h-9 md:text-sm"
             >
               {LENGTH_OPTIONS.map((o) => (
                 <option key={o.value || "any"} value={o.value}>
@@ -77,7 +77,7 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             <select
               name="focus"
               defaultValue={query.focus}
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+              className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30 md:min-h-9 md:text-sm"
             >
               <option value="">Any</option>
               {WRITER_FOCUS_AREA_OPTIONS.map((o) => (
@@ -96,7 +96,7 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             <select
               name="stage"
               defaultValue={query.stage}
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+              className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30 md:min-h-9 md:text-sm"
             >
               {STAGE_OPTIONS.map((o) => (
                 <option key={o.value || "any-stage"} value={o.value}>
@@ -111,7 +111,7 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             <select
               name="sort"
               defaultValue={query.sort}
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+              className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30 md:min-h-9 md:text-sm"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -121,16 +121,16 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
             </select>
           </label>
 
-          <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="submit"
-              className="inline-flex h-9 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-xs font-semibold text-white shadow-sm hover:opacity-95"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95 sm:w-auto md:min-h-9 md:text-xs"
             >
               Apply
             </button>
             <Link
               href="/pieces"
-              className="text-center text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
+              className="min-h-11 py-3 text-center text-sm font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:min-h-0 sm:py-0 md:text-xs"
             >
               Clear filters
             </Link>

@@ -1,18 +1,11 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
 
-export async function NotificationsLink() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
-
-  const unread = await db.notification.count({
-    where: { userId: session.user.id, read: false },
-  });
+export function NotificationsLink({ unread }: { unread: number | null }) {
+  if (unread === null) return null;
 
   return (
     <Link
-      className="inline-flex h-9 shrink-0 items-center justify-center rounded-xl px-2.5 text-[11px] font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:px-3 sm:text-xs"
+      className="inline-flex min-h-11 min-w-[2.75rem] shrink-0 items-center justify-center rounded-xl px-2.5 text-xs font-semibold text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:min-h-9 sm:px-3"
       href="/notifications"
     >
       Notifications{unread > 0 ? ` (${unread})` : ""}

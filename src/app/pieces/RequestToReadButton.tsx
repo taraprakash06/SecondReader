@@ -34,11 +34,16 @@ export function RequestToReadButton({
 
   if (state === "need_sample") {
     return (
-      <div className="text-sm text-[color:var(--ink-muted)]">
-        <Link className="font-semibold text-[color:var(--brand-purple)] hover:underline" href="/reader/onboarding">
+      <div className="space-y-2">
+        <Link
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--brand-purple)] hover:bg-[color:var(--paper-2)] sm:w-auto"
+          href="/reader/onboarding"
+        >
           Finish reader onboarding
-        </Link>{" "}
-        to request reads.
+        </Link>
+        <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">
+          Required before you can request reads.
+        </p>
       </div>
     );
   }
@@ -62,7 +67,7 @@ export function RequestToReadButton({
     const label = connectedAssignmentId ? "Open piece & feedback →" : "Open notifications";
     return (
       <Link
-        className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:bg-[color:var(--paper-2)]"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:bg-[color:var(--paper-2)] sm:w-auto"
         href={href}
       >
         {label}
@@ -76,9 +81,9 @@ export function RequestToReadButton({
 
   if (state === "signed_out") {
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <Link
-          className="inline-flex h-10 w-fit items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95 sm:w-fit"
           href={`/auth/sign-in?callbackUrl=${encodeURIComponent(signInCallbackUrl)}`}
         >
           Sign in to request
@@ -104,12 +109,12 @@ export function RequestToReadButton({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full min-w-0 flex-col gap-2">
       <button
         type="button"
         disabled={pending}
         onClick={onClick}
-        className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60 sm:w-auto sm:text-sm"
       >
         {pending ? "Sending…" : "Request to Read"}
       </button>

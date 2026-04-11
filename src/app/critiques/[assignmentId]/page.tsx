@@ -63,7 +63,7 @@ export default async function CritiquePage({
     !isStopped;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"
@@ -71,21 +71,27 @@ export default async function CritiquePage({
         >
           {isWriter ? "← Submission" : "← Notifications"}
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight">{sub.title}</h1>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          <span className="font-medium text-[color:var(--ink)]">{sub.genre}</span>
-          {sub.subgenre ? ` · ${sub.subgenre}` : ""} · {sub.wordCount} words · Reader:{" "}
-          {assignment.reader.name} · Writer: {sub.writer.name}
+        <h1 className="text-xl font-semibold leading-snug tracking-tight sm:text-2xl">{sub.title}</h1>
+        <div className="space-y-2 text-sm leading-relaxed text-[color:var(--ink-muted)]">
+          <p>
+            <span className="font-medium text-[color:var(--ink)]">{sub.genre}</span>
+            {sub.subgenre ? ` · ${sub.subgenre}` : ""} · {sub.wordCount} words
+          </p>
+          <p>
+            Reader: <span className="font-medium text-[color:var(--ink)]">{assignment.reader.name}</span>
+            <span className="text-[color:var(--ink-muted)]"> · </span>
+            Writer: <span className="font-medium text-[color:var(--ink)]">{sub.writer.name}</span>
+          </p>
           {isComplete ? (
-            <span className="ml-2 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-900">
+            <span className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-900">
               Critique complete
             </span>
           ) : firstPassComplete ? (
-            <span className="ml-2 inline-flex rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-950">
+            <span className="inline-flex w-fit rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-950">
               First pass complete
             </span>
           ) : null}
-        </p>
+        </div>
       </div>
 
       {isWriter && hasFeedback && !isComplete && !firstPassComplete ? (
@@ -135,10 +141,10 @@ export default async function CritiquePage({
 
       {/* Reader: still editing — single column: excerpt + margin notes + summary */}
       {isReader && !isComplete && !isStopped ? (
-        <div className="mt-8">
-          <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
-            <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
-            <p className="mt-1 text-xs text-zinc-600">
+        <div className="mt-6 sm:mt-8">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+            <h2 className="text-base font-semibold text-zinc-900 sm:text-sm">Your feedback</h2>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-600 sm:mt-1 sm:text-xs sm:leading-normal">
               {readerHasFullManuscriptUnlocked ? (
                 <>
                   The writer unlocked their full manuscript. Below is the <span className="font-medium">entire</span>{" "}
@@ -185,7 +191,7 @@ export default async function CritiquePage({
               />
               <button
                 type="submit"
-                className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm hover:opacity-95 sm:w-auto sm:text-sm"
               >
                 Save feedback
               </button>
@@ -214,9 +220,9 @@ export default async function CritiquePage({
 
       {/* Reader: completed — single read-only view (draft + margin + summary together) */}
       {isReader && isComplete && hasFeedback && assignment.feedback ? (
-        <div className="mt-8">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
-            <h2 className="text-sm font-semibold text-zinc-900">Your feedback</h2>
+        <div className="mt-6 sm:mt-8">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+            <h2 className="text-base font-semibold text-zinc-900 sm:text-sm">Your feedback</h2>
             <div className="mt-4">
               <CritiqueFeedbackReview
                 feedback={assignment.feedback}
@@ -230,10 +236,10 @@ export default async function CritiquePage({
 
       {/* Writer: one column — manuscript + margin gutter (like reader), then overall feedback, then actions */}
       {isWriter ? (
-        <div className="mt-8 mx-auto w-full max-w-4xl">
-          <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
-            <h2 className="text-sm font-semibold text-zinc-900">Reader feedback</h2>
-            <p className="mt-1 text-xs text-zinc-600">
+        <div className="mt-6 mx-auto w-full max-w-4xl sm:mt-8">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+            <h2 className="text-base font-semibold text-zinc-900 sm:text-sm">Reader feedback</h2>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-600 sm:mt-1 sm:text-xs sm:leading-normal">
               Your draft appears with {assignment.reader.name}&apos;s margin notes beside it, then their overall
               response below.
             </p>
@@ -278,19 +284,19 @@ export default async function CritiquePage({
                       ) : !firstPassComplete ? (
                         <p className="mt-3 text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
                       ) : (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <form action={unlockFullPieceForReader.bind(null, assignment.id)}>
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                          <form action={unlockFullPieceForReader.bind(null, assignment.id)} className="w-full sm:w-auto">
                             <button
                               type="submit"
-                              className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm hover:opacity-95 sm:min-h-10 sm:text-sm"
                             >
                               Yes
                             </button>
                           </form>
-                          <form action={stopCritiqueWithReader.bind(null, assignment.id)}>
+                          <form action={stopCritiqueWithReader.bind(null, assignment.id)} className="w-full sm:w-auto">
                             <button
                               type="submit"
-                              className="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
+                              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-base font-semibold text-zinc-900 hover:bg-zinc-50 sm:min-h-10 sm:text-sm"
                             >
                               No
                             </button>

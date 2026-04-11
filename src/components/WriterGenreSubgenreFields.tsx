@@ -22,7 +22,9 @@ export function WriterGenreSubgenreFields() {
 
   const subOptions = useMemo(() => subgenreOptionsForGenres(genres), [genres]);
 
+  /* Prune invalid subgenres when the selected genres change (allowed options are derived). */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync derived multi-select state to genre list
     setSubgenres((prev) => {
       const allowed = new Set(subgenreOptionsForGenres(genres));
       return prev.filter((s) => allowed.has(s)).slice(0, MAX_SUBGENRES);
@@ -60,14 +62,14 @@ export function WriterGenreSubgenreFields() {
             return (
               <div
                 key={g}
-                className="flex items-start gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm leading-snug transition hover:border-[color:var(--brand-magenta)]/35"
+                className="flex min-h-[2.75rem] items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-snug transition hover:border-[color:var(--brand-magenta)]/35"
               >
                 <input
                   id={id}
                   type="checkbox"
                   checked={checked}
                   onChange={() => toggleGenre(g)}
-                  className="mt-0.5 size-4 shrink-0 rounded border-zinc-300 text-[color:var(--brand-magenta)] focus:ring-[color:var(--brand-magenta)]/30"
+                  className="size-5 shrink-0 rounded border-zinc-300 text-[color:var(--brand-magenta)] focus:ring-[color:var(--brand-magenta)]/30"
                 />
                 <label htmlFor={id} className="flex-1 cursor-pointer text-[color:var(--ink)]">
                   {g}
@@ -98,7 +100,7 @@ export function WriterGenreSubgenreFields() {
               return (
                 <div
                   key={s}
-                  className={`flex items-start gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm leading-snug transition hover:border-[color:var(--brand-purple)]/35 ${
+                  className={`flex min-h-[2.75rem] items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-snug transition hover:border-[color:var(--brand-purple)]/35 ${
                     atCap ? "opacity-45" : ""
                   }`}
                 >
@@ -108,7 +110,7 @@ export function WriterGenreSubgenreFields() {
                     checked={checked}
                     disabled={atCap}
                     onChange={() => toggleSub(s)}
-                    className="mt-0.5 size-4 shrink-0 rounded border-zinc-300 text-[color:var(--brand-purple)] focus:ring-[color:var(--brand-purple)]/30"
+                    className="size-5 shrink-0 rounded border-zinc-300 text-[color:var(--brand-purple)] focus:ring-[color:var(--brand-purple)]/30"
                   />
                   <label
                     htmlFor={id}

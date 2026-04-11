@@ -36,7 +36,7 @@ export function WriterFocusAreasField() {
           return (
             <div
               key={o.id}
-              className={`flex items-start gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm leading-snug transition hover:border-[color:var(--brand-magenta)]/35 ${
+              className={`flex min-h-[2.75rem] items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-snug transition hover:border-[color:var(--brand-magenta)]/35 ${
                 atCap ? "opacity-45" : ""
               }`}
             >
@@ -46,7 +46,7 @@ export function WriterFocusAreasField() {
                 checked={checked}
                 disabled={atCap}
                 onChange={() => toggle(o.id)}
-                className="mt-0.5 size-4 shrink-0 rounded border-zinc-300 text-[color:var(--brand-magenta)] focus:ring-[color:var(--brand-magenta)]/30"
+                className="size-5 shrink-0 rounded border-zinc-300 text-[color:var(--brand-magenta)] focus:ring-[color:var(--brand-magenta)]/30"
               />
               <label
                 htmlFor={inputId}
@@ -68,7 +68,7 @@ export function WriterFocusAreasField() {
             name="focusOther"
             required
             rows={3}
-            className="rounded-xl border border-zinc-200 bg-white p-3 text-sm leading-6 text-[color:var(--ink)] focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+            className="min-h-[5rem] rounded-xl border border-zinc-200 bg-white p-3 text-base leading-relaxed text-[color:var(--ink)] focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:text-sm md:leading-6"
             placeholder="What should the reader focus on that isn’t listed above?"
           />
         </div>

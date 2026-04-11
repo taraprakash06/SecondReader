@@ -25,10 +25,10 @@ export function CritiqueFeedbackReview({
     <div className="space-y-6">
       {marginAnnotationText.trim() ? (
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">
+          <h3 className="text-base font-semibold text-zinc-900 sm:text-sm">
             {hasMargins ? "Margin notes" : "Draft"}
           </h3>
-          <p className="mt-1 text-xs text-zinc-600">
+          <p className="mt-1 text-sm leading-relaxed text-zinc-600 sm:text-xs sm:leading-normal">
             {hasMargins
               ? `Inline comments from ${readerName} on the excerpt they annotated.`
               : "Your shared text. The reader left overall feedback below."}
@@ -48,18 +48,18 @@ export function CritiqueFeedbackReview({
         </div>
       ) : null}
 
-      <div className="space-y-3 border-t border-zinc-200 pt-6 text-sm text-zinc-700">
+      <div className="space-y-4 border-t border-zinc-200 pt-6 text-base leading-relaxed text-zinc-700 sm:text-sm">
         <div>
           <p className="font-medium text-zinc-900">Strengths</p>
-          <p className="mt-1 whitespace-pre-wrap">{feedback.strengths || "—"}</p>
+          <p className="mt-2 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{feedback.strengths || "—"}</p>
         </div>
         <div>
           <p className="font-medium text-zinc-900">Areas for improvement</p>
-          <p className="mt-1 whitespace-pre-wrap">{feedback.improvements || "—"}</p>
+          <p className="mt-2 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{feedback.improvements || "—"}</p>
         </div>
         <div>
           <p className="font-medium text-zinc-900">Key takeaways</p>
-          <p className="mt-1 whitespace-pre-wrap">{feedback.keyTakeaways || "—"}</p>
+          <p className="mt-2 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{feedback.keyTakeaways || "—"}</p>
         </div>
       </div>
     </div>

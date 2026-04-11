@@ -19,7 +19,7 @@ function CreateSubmissionButton() {
       type="submit"
       disabled={pending}
       aria-busy={pending}
-      className={`inline-flex h-10 min-w-[11rem] items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-medium text-white shadow-sm ${
+      className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm sm:min-h-10 sm:min-w-[11rem] sm:w-auto sm:text-sm ${
         pending ? "cursor-wait opacity-95" : "hover:opacity-95"
       }`}
     >
@@ -77,9 +77,9 @@ export function WriterSubmitFormClient() {
     <WriterSubmitFormShell
       action={formAction}
       onBeforeSubmit={onBeforeSubmit}
-      className="mt-8 grid gap-4 rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm"
+      className="mt-6 grid gap-4 rounded-2xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm sm:mt-8 sm:rounded-3xl"
     >
-      <div className="grid gap-4 rounded-[23px] border border-zinc-200 bg-white/90 p-6 backdrop-blur">
+      <div className="grid gap-5 rounded-[22px] border border-zinc-200 bg-white/90 p-4 backdrop-blur sm:gap-4 sm:rounded-[23px] sm:p-6">
         {displayError ? (
           <p
             className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900"
@@ -89,21 +89,21 @@ export function WriterSubmitFormClient() {
           </p>
         ) : null}
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium">Title</span>
             <input
               name="title"
               required
-              className="h-10 rounded-xl border border-zinc-200 bg-white px-3 focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+              className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:min-h-10 md:text-sm"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium">Word count (full piece)</span>
             <input
               name="wordCount"
               inputMode="numeric"
               required
-              className="h-10 rounded-xl border border-zinc-200 bg-white px-3 focus:border-[color:var(--brand-purple)]/50 focus:outline-none"
+              className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-purple)]/50 focus:outline-none md:min-h-10 md:text-sm"
               placeholder="e.g., 2400"
             />
           </label>
@@ -111,12 +111,12 @@ export function WriterSubmitFormClient() {
 
         <WriterGenreSubgenreFields />
 
-        <label className="flex max-w-md flex-col gap-1 text-sm">
+        <label className="flex max-w-full flex-col gap-1.5 text-sm sm:max-w-md">
           <span className="font-medium">Stage</span>
           <select
             name="stage"
             defaultValue="EARLY_DRAFT"
-            className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+            className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:min-h-10 md:text-sm"
           >
             {STAGE_OPTIONS.map((o) => (
               <option key={o.id} value={o.id}>
@@ -140,7 +140,7 @@ export function WriterSubmitFormClient() {
           </span>
           <input
             name="notHelpful"
-            className="h-10 rounded-xl border border-zinc-200 bg-white px-3 focus:border-[color:var(--brand-purple)]/50 focus:outline-none"
+            className="min-h-12 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-purple)]/50 focus:outline-none md:min-h-10 md:text-sm"
             placeholder="e.g., Not looking for grammar edits yet"
           />
         </label>
@@ -153,8 +153,8 @@ export function WriterSubmitFormClient() {
           </span>
           <textarea
             name="writerBrowseNote"
-            rows={2}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
+            rows={3}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-base leading-relaxed focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:text-sm"
             placeholder="e.g. Mostly worried about pacing in the middle."
           />
         </label>
@@ -172,8 +172,8 @@ export function WriterSubmitFormClient() {
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2">
-          <p className="max-w-md text-right text-xs text-[color:var(--ink-muted)]">
+        <div className="flex flex-col items-stretch gap-3 sm:items-end">
+          <p className="max-w-md text-left text-xs text-[color:var(--ink-muted)] sm:text-right">
             Wait for the redirect after you submit—no need to click again.
           </p>
           <CreateSubmissionButton />

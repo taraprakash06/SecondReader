@@ -114,7 +114,7 @@ export default async function BrowsePiecesPage({
   const filterActive = narrowedList || hasActiveBrowseFilters(query);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
           ← Home
@@ -141,7 +141,7 @@ export default async function BrowsePiecesPage({
         ) : null}
       </div>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)] lg:items-start lg:gap-10">
+      <div className="mt-8 grid gap-6 md:mt-10 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)] lg:items-start lg:gap-10">
         <PiecesFilterSidebar query={query} />
 
         <div className="min-w-0">
@@ -190,38 +190,58 @@ export default async function BrowsePiecesPage({
                 buttonState = "ready";
               }
 
+              const genreMeta = genreLine.trim() || "—";
+              const lengthMeta = formatWordCountLine(s.wordCount);
+
               return (
                 <article
                   key={s.id}
-                  className="rounded-2xl border border-zinc-200 bg-white/95 p-6 shadow-sm backdrop-blur"
+                  className="w-full max-w-full rounded-xl border border-zinc-200/90 bg-white p-4 shadow-sm backdrop-blur md:rounded-2xl md:p-6"
                 >
-                  <h2 className="text-lg font-semibold text-[color:var(--ink)]">{s.title}</h2>
-                  <p className="mt-1 text-sm text-[color:var(--ink-muted)]">
-                    <span className="font-medium text-[color:var(--ink)]">Writer:</span> {s.writer.name}
-                  </p>
-                  <dl className="mt-4 space-y-2 text-sm">
-                    <div>
-                      <dt className="inline font-medium text-[color:var(--ink)]">Genre:</dt>{" "}
-                      <dd className="inline text-[color:var(--ink-muted)]">{genreLine || "—"}</dd>
+                  <div className="flex flex-col gap-3 md:hidden">
+                    <h2 className="text-xl font-semibold leading-snug tracking-tight text-[color:var(--ink)]">
+                      {s.title}
+                    </h2>
+                    <p className="text-sm leading-snug text-[color:var(--ink-muted)]">
+                      <span className="break-words">{genreMeta}</span>
+                      <span className="text-zinc-400"> · </span>
+                      <span>{lengthMeta}</span>
+                    </p>
+                    <p className="line-clamp-4 text-sm leading-relaxed text-[color:var(--ink-muted)]">
+                      {writerNote}
+                    </p>
+                  </div>
+
+                  <div className="hidden md:block">
+                    <h2 className="text-lg font-semibold leading-snug text-[color:var(--ink)]">{s.title}</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-muted)]">
+                      <span className="font-medium text-[color:var(--ink)]">Writer:</span> {s.writer.name}
+                    </p>
+                    <div className="mt-4 space-y-3 text-sm leading-relaxed">
+                      <p className="break-words">
+                        <span className="font-medium text-[color:var(--ink)]">Genre: </span>
+                        <span className="text-[color:var(--ink-muted)]">{genreLine || "—"}</span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-[color:var(--ink)]">Length: </span>
+                        <span className="text-[color:var(--ink-muted)]">{lengthMeta}</span>
+                      </p>
+                      <p className="break-words">
+                        <span className="font-medium text-[color:var(--ink)]">Looking for feedback on: </span>
+                        <span className="text-[color:var(--ink-muted)]">{focusLine}</span>
+                      </p>
+                      <p className="break-words">
+                        <span className="font-medium text-[color:var(--ink)]">Writer note: </span>
+                        <span className="text-[color:var(--ink-muted)]">{writerNote}</span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-[color:var(--ink)]">Requests open: </span>
+                        <span className="text-[color:var(--ink-muted)]">{s.requestsOpen ? "Yes" : "No"}</span>
+                      </p>
                     </div>
-                    <div>
-                      <dt className="inline font-medium text-[color:var(--ink)]">Length:</dt>{" "}
-                      <dd className="inline text-[color:var(--ink-muted)]">{formatWordCountLine(s.wordCount)}</dd>
-                    </div>
-                    <div>
-                      <dt className="inline font-medium text-[color:var(--ink)]">Looking for feedback on:</dt>{" "}
-                      <dd className="inline text-[color:var(--ink-muted)]">{focusLine}</dd>
-                    </div>
-                    <div>
-                      <dt className="inline font-medium text-[color:var(--ink)]">Writer note:</dt>{" "}
-                      <dd className="inline text-[color:var(--ink-muted)]">{writerNote}</dd>
-                    </div>
-                    <div>
-                      <dt className="inline font-medium text-[color:var(--ink)]">Requests open:</dt>{" "}
-                      <dd className="inline text-[color:var(--ink-muted)]">{s.requestsOpen ? "Yes" : "No"}</dd>
-                    </div>
-                  </dl>
-                  <div className="mt-5">
+                  </div>
+
+                  <div className="mt-4 w-full min-w-0 md:mt-5">
                     <RequestToReadButton
                       submissionId={s.id}
                       state={buttonState}

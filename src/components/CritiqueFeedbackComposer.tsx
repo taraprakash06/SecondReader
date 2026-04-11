@@ -44,10 +44,10 @@ export function CritiqueFeedbackComposer({
     <>
       <div className="space-y-3">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">
+          <h3 className="text-base font-semibold text-zinc-900 sm:text-sm">
             {fullManuscriptLabels ? "Full manuscript — margin notes" : "Shared draft — margin notes"}
           </h3>
-          <p className="mt-1 text-xs text-zinc-600">
+          <p className="mt-1 text-sm leading-relaxed text-zinc-600 sm:text-xs sm:leading-normal">
             {fullPieceUnlocked ? (
               <>
                 The opening includes your <span className="font-medium text-zinc-800">saved</span> margin notes from
@@ -89,38 +89,38 @@ export function CritiqueFeedbackComposer({
       </div>
 
       <div className="mt-6 border-t border-zinc-200 pt-6">
-        <h3 className="text-sm font-semibold text-zinc-900">Your feedback summary</h3>
-        <p className="mt-1 text-xs text-zinc-600">
+        <h3 className="text-base font-semibold text-zinc-900 sm:text-sm">Your feedback summary</h3>
+        <p className="mt-1 text-sm leading-relaxed text-zinc-600 sm:text-xs sm:leading-normal">
           {fullManuscriptLabels
             ? "Overall strengths, improvements, and takeaways for the whole piece—alongside all margin notes above."
             : "Overall strengths, improvements, and takeaways—alongside any margin notes above."}
         </p>
         <div className="mt-4 space-y-3">
-          <label className="grid gap-1 text-sm">
+          <label className="grid gap-1.5 text-sm">
             <span className="font-medium text-zinc-800">Strengths</span>
             <textarea
               value={strengths}
               onChange={(e) => setStrengths(e.target.value)}
-              rows={3}
-              className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
+              rows={4}
+              className="w-full min-h-[5.5rem] rounded-xl border border-zinc-200 px-3 py-2.5 text-base leading-relaxed focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/25 md:text-sm"
             />
           </label>
-          <label className="grid gap-1 text-sm">
+          <label className="grid gap-1.5 text-sm">
             <span className="font-medium text-zinc-800">Areas for improvement</span>
             <textarea
               value={improvements}
               onChange={(e) => setImprovements(e.target.value)}
-              rows={3}
-              className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
+              rows={4}
+              className="w-full min-h-[5.5rem] rounded-xl border border-zinc-200 px-3 py-2.5 text-base leading-relaxed focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/25 md:text-sm"
             />
           </label>
-          <label className="grid gap-1 text-sm">
+          <label className="grid gap-1.5 text-sm">
             <span className="font-medium text-zinc-800">Key takeaways</span>
             <textarea
               value={keyTakeaways}
               onChange={(e) => setKeyTakeaways(e.target.value)}
-              rows={3}
-              className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
+              rows={4}
+              className="w-full min-h-[5.5rem] rounded-xl border border-zinc-200 px-3 py-2.5 text-base leading-relaxed focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/25 md:text-sm"
             />
           </label>
         </div>

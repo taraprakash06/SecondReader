@@ -14,7 +14,7 @@ export default async function OnboardingPage() {
   if (user.onboarded) redirect("/");
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-14">
+    <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
       <div className="flex flex-col gap-2">
         <Link
           className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]"

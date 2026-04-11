@@ -3,7 +3,7 @@ import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 export default function WriterLanding() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-12">
+    <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
         <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
           ← Home
@@ -40,7 +40,7 @@ export default function WriterLanding() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
         <Link
           className="rounded-2xl border border-zinc-200 bg-white/90 p-6 shadow-sm backdrop-blur hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)]"
           href="/writer/submit"

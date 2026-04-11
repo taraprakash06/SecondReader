@@ -33,16 +33,16 @@ export function BrowseReadersAuthGate({ callbackPath = "/readers" }: Props) {
           You need an account to browse readers and read public feedback samples before inviting someone to your piece.
           Log in or create a free account to continue.
         </p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link
             href={`/auth/sign-in?callbackUrl=${q}`}
-            className="flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+            className="flex min-h-11 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-base font-semibold text-white shadow-sm hover:opacity-95 sm:min-h-10 sm:text-sm"
           >
             Log in
           </Link>
           <Link
             href={`/auth/sign-up?callbackUrl=${q}`}
-            className="flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)]"
+            className="flex min-h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-base font-semibold text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)] sm:min-h-10 sm:text-sm"
           >
             Create account
           </Link>
