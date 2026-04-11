@@ -92,7 +92,7 @@ export function InlineMarginComments({
       <div className="divide-y divide-zinc-200/80 bg-zinc-100/50">
         {paragraphs.map((p) => (
           <div key={p.key} className={layout.rowGrid}>
-            <div className={layout.textCell}>
+            <div className={layout.textCell} data-margin-manuscript-source>
               <div className={layout.textInner}>{renderWithHighlights(p.text, p.annotations)}</div>
             </div>
 

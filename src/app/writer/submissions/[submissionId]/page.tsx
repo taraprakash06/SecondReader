@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SubmissionInitialPagesBody } from "@/components/SubmissionInitialPagesBody";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 import {
   MAX_READER_SLOTS_PER_SUBMISSION,
   getSubmissionSlotUsage,
@@ -80,7 +81,9 @@ export default async function WriterSubmissionDetailPage({
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-zinc-900">What readers see first (~3 pages)</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">
+            What readers see first ({FIRST_READ_SHARE_LABEL})
+          </h2>
           <p className="mt-1 text-xs text-zinc-600">
             Your full manuscript is saved on this submission. Only the excerpt below is visible to readers until you
             unlock the rest from a critique.

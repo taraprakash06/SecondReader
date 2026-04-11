@@ -56,7 +56,8 @@ export function CritiqueFeedbackComposer({
               </>
             ) : firstReadIsWholePiece ? (
               <>
-                This is the writer&apos;s <span className="font-medium text-zinc-800">complete</span> submission—
+                This is the writer&apos;s <span className="font-medium text-zinc-800">complete</span>{" "}
+                submission—
                 everything they shared is below, with nothing more to unlock. Select text to add comments or deletion
                 suggestions, then add your overall summary. When you&apos;re done, mark the critique complete.
               </>

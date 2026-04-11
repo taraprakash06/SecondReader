@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { WRITER_FOCUS_AREA_OPTIONS } from "@/lib/writerFocusAreas";
 import type { BrowsePiecesQuery } from "@/lib/browsePiecesQuery";
+import { SUBMISSION_GENRE_OPTIONS } from "@/lib/submissionTaxonomy";
 
 const LENGTH_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Any length" },
@@ -26,6 +27,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 
 export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
   const lengthValue = query.length === "any" ? "" : query.length;
+  const genreDefault = (SUBMISSION_GENRE_OPTIONS as readonly string[]).includes(query.genre) ? query.genre : "";
 
   return (
     <aside className="lg:sticky lg:top-24">
@@ -38,14 +40,21 @@ export function PiecesFilterSidebar({ query }: { query: BrowsePiecesQuery }) {
         <form method="get" action="/pieces" className="mt-4 space-y-4">
           <label className="block grid gap-1.5 text-sm">
             <span className="font-medium text-zinc-800">Genre</span>
-            <input
-              type="text"
+            <select
               name="genre"
-              defaultValue={query.genre}
-              placeholder="e.g. Fiction, poetry"
-              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
-            />
-            <span className="text-[11px] text-[color:var(--ink-muted)]">Matches genre or subgenre text.</span>
+              defaultValue={genreDefault}
+              className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-[color:var(--brand-magenta)]/40 focus:outline-none focus:ring-1 focus:ring-[color:var(--brand-magenta)]/30"
+            >
+              <option value="">Any genre</option>
+              {SUBMISSION_GENRE_OPTIONS.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+            <span className="text-[11px] text-[color:var(--ink-muted)]">
+              Matches listings that include this genre (writers can pick more than one).
+            </span>
           </label>
 
           <label className="block grid gap-1.5 text-sm">

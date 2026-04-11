@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { hash } from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { safeInternalCallbackUrl } from "@/lib/safeRedirect";
 
 const schema = z.object({
   name: z.string().min(1).max(80),
@@ -33,6 +34,8 @@ export async function signUpAction(formData: FormData) {
     data: { name, email, passwordHash, role: "WRITER" },
   });
 
-  redirect(`/auth/sign-in?callbackUrl=${encodeURIComponent("/onboarding")}`);
+  const rawCallback = String(formData.get("callbackUrl") ?? "");
+  const afterSignIn = safeInternalCallbackUrl(rawCallback || null, "/onboarding");
+  redirect(`/auth/sign-in?callbackUrl=${encodeURIComponent(afterSignIn)}`);
 }
 

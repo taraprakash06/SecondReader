@@ -73,7 +73,7 @@ export default async function RootLayout({
                   className="hidden min-h-9 max-w-[6.25rem] items-center justify-center rounded-xl px-2 text-center text-[10px] font-semibold leading-tight text-[color:var(--ink-muted)] hover:text-[color:var(--ink)] sm:inline-flex sm:max-w-none sm:px-3 sm:text-xs sm:leading-snug"
                   href="/reader"
                 >
-                  Submit Feedback Sample
+                  become a reader
                 </Link>
                 <NotificationsLink />
                 <AuthButton />

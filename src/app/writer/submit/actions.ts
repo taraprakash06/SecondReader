@@ -6,6 +6,13 @@ import { auth } from "@/lib/auth";
 import { parseWriterFocusAreasJson } from "@/lib/writerFocusAreas";
 import { writerAreaToLegacyFocus } from "@/lib/writerFocusAreasServer";
 import { sanitizeFullManuscript, splitIntoInitialPagesAndFullText } from "@/lib/manuscriptSplit";
+import {
+  joinGenresForStorage,
+  joinSubgenresForStorage,
+  parseStringArrayJson,
+  validateSubmissionGenres,
+  validateSubmissionSubgenres,
+} from "@/lib/submissionTaxonomy";
 
 /** `submissionId` is set on success; client navigates (redirect() + useActionState is unreliable in the browser). */
 export type CreateSubmissionState = { error: string | null; submissionId?: string };
@@ -23,8 +30,12 @@ export async function createSubmission(
     if (!writer) throw new Error("User not found.");
 
     const title = String(formData.get("title") ?? "").trim();
-    const genre = String(formData.get("genre") ?? "").trim();
-    const subgenre = String(formData.get("subgenre") ?? "").trim();
+    const genres = parseStringArrayJson(String(formData.get("genresJson") ?? "[]"), "genre");
+    const subgenres = parseStringArrayJson(String(formData.get("subgenresJson") ?? "[]"), "subgenre");
+    validateSubmissionGenres(genres);
+    validateSubmissionSubgenres(genres, subgenres);
+    const genre = joinGenresForStorage(genres);
+    const subgenre = joinSubgenresForStorage(subgenres);
     const wordCount = Number(formData.get("wordCount") ?? 0);
     const stage = String(formData.get("stage") ?? "").trim() as DraftStage;
     const focusAreasJson = String(formData.get("writerFocusAreasJson") ?? "[]");
@@ -34,7 +45,7 @@ export async function createSubmission(
     const writerBrowseNote = String(formData.get("writerBrowseNote") ?? "").trim().slice(0, 2000);
     const manuscriptRaw = String(formData.get("fullManuscript") ?? "");
 
-    if (!title || !genre) throw new Error("Missing title/genre.");
+    if (!title) throw new Error("Missing title.");
     if (!Number.isFinite(wordCount) || wordCount <= 0) throw new Error("Invalid word count.");
     if (!Object.values(DraftStage).includes(stage)) throw new Error("Invalid stage.");
     const sanitizedFull = sanitizeFullManuscript(manuscriptRaw);

@@ -1,7 +1,13 @@
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { WriterSubmitAuthGate } from "@/components/WriterSubmitAuthGate";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 import { WriterSubmitFormLoader } from "./WriterSubmitFormLoader";
 
-export default function WriterSubmitPage() {
+export default async function WriterSubmitPage() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
   return (
     <div className="mx-auto w-full max-w-4xl px-6 py-12">
       <div className="flex flex-col gap-2">
@@ -14,12 +20,13 @@ export default function WriterSubmitPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Submit a piece</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
           Upload your <span className="font-medium text-[color:var(--ink)]">full manuscript</span> here. The platform
-          only shows readers your <span className="font-medium text-[color:var(--ink)]">first ~3 pages</span> at
-          first; you can share the rest with a reader after you see their feedback.
+          only shows readers your{" "}
+          <span className="font-medium text-[color:var(--ink)]">first {FIRST_READ_SHARE_LABEL}</span> at first; you can
+          share the rest with a reader after you see their feedback.
         </p>
       </div>
 
-      <WriterSubmitFormLoader />
+      {userId ? <WriterSubmitFormLoader /> : <WriterSubmitAuthGate />}
     </div>
   );
 }

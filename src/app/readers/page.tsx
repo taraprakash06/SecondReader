@@ -107,7 +107,7 @@ export default async function ReadersPage({
             className="rounded-2xl border border-zinc-200 bg-white/95 p-6 shadow-sm backdrop-blur"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div>
+              <div className="min-w-0 sm:pr-4">
                 <h2 className="text-lg font-semibold">{r.user.name}</h2>
                 <p className="text-sm text-[color:var(--ink-muted)]">
                   <span className="font-medium text-[color:var(--ink)]">Genres:</span>{" "}
@@ -124,7 +124,7 @@ export default async function ReadersPage({
               </div>
 
               <Link
-                className="mt-3 inline-flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)] sm:mt-0"
+                className="mt-3 inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-[color:var(--ink)] hover:border-[color:var(--brand-magenta)]/35 hover:bg-[color:var(--paper-2)] sm:mt-0 sm:self-start"
                 href={`/readers/${r.userId}`}
               >
                 View sample →

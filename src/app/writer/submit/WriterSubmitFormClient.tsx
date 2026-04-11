@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useCallback, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { WriterGenreSubgenreFields } from "@/components/WriterGenreSubgenreFields";
 import { WriterFocusAreasField } from "@/components/WriterFocusAreasField";
 import { WriterSubmitFormShell } from "@/components/WriterSubmitFormShell";
 import { RichTextInitialPagesField } from "@/components/RichTextInitialPagesField";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 import { MAX_MANUSCRIPT_SUBMIT_UTF8_BYTES } from "@/lib/sanitizeRichText";
 import { createSubmission, type CreateSubmissionState } from "./actions";
 
@@ -107,25 +109,7 @@ export function WriterSubmitFormClient() {
           </label>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium">Genre</span>
-            <input
-              name="genre"
-              required
-              className="h-10 rounded-xl border border-zinc-200 bg-white px-3 focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
-              placeholder="e.g., Literary Fiction"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium">Subgenre (optional)</span>
-            <input
-              name="subgenre"
-              className="h-10 rounded-xl border border-zinc-200 bg-white px-3 focus:border-[color:var(--brand-purple)]/50 focus:outline-none"
-              placeholder="e.g., Magical realism"
-            />
-          </label>
-        </div>
+        <WriterGenreSubgenreFields />
 
         <label className="flex max-w-md flex-col gap-1 text-sm">
           <span className="font-medium">Stage</span>
@@ -179,7 +163,8 @@ export function WriterSubmitFormClient() {
           <span className="font-medium text-zinc-900">Paste your full manuscript</span>
           <p className="text-xs text-[color:var(--ink-muted)]">
             Paste from Word or Google Docs to keep bold, italics, underline, and similar formatting. Your whole piece
-            is saved here; readers only see the first ~3 pages until you choose to share more after feedback.
+            is saved here; readers only see the first {FIRST_READ_SHARE_LABEL} until you choose to share more after
+            feedback.
           </p>
           <RichTextInitialPagesField />
           <p className="text-xs text-[color:var(--ink-muted)]">

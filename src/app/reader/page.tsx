@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 export default function ReaderLanding() {
   return (
@@ -33,7 +34,7 @@ export default function ReaderLanding() {
             </li>
             <li>
               <span className="font-medium text-[color:var(--ink)]">Step 3:</span>{" "}
-              You give inline margin notes + a short summary on their first 3 pages.
+              You give inline margin notes + a short summary on the opening they see first ({FIRST_READ_SHARE_LABEL}).
             </li>
           </ol>
           <p className="mt-4 text-sm text-[color:var(--ink-muted)]">

@@ -1,16 +1,16 @@
 import { richTextPlainLength, sanitizeManuscriptRichText } from "@/lib/sanitizeRichText";
 
 /**
- * Approximate manuscript pages (prose). Midpoint of 250–300 words/page.
- * Used only for the “first read” gate (first 3 pages vs full short piece).
+ * Target word count for the reader’s first pass (before unlock). Split prefers ending at
+ * `.` `!` `?` shortly after this count so sentences are not cut mid-way.
  */
-export const WORDS_PER_PAGE = 275;
+export const FIRST_READ_TARGET_WORDS = 900;
 
-/** Number of pages readers see before an unlock is needed (long works). */
-export const FIRST_READ_PAGE_COUNT = 3;
+/** User-facing shorthand; keep aligned with {@link FIRST_READ_TARGET_WORDS}. */
+export const FIRST_READ_SHARE_LABEL = "~900 words";
 
-/** If total words ≤ this, the whole piece is the first read (no `fullText`, no unlock). */
-export const FIRST_READ_MAX_WORDS = WORDS_PER_PAGE * FIRST_READ_PAGE_COUNT;
+/** @deprecated Use {@link FIRST_READ_TARGET_WORDS}. Kept for any external imports. */
+export const FIRST_READ_MAX_WORDS = FIRST_READ_TARGET_WORDS;
 
 const MAX_MANUSCRIPT_HTML_CHARS = 600_000;
 const MAX_MANUSCRIPT_PLAIN_CHARS = 1_000_000;
@@ -24,11 +24,74 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function htmlToPlainWords(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 /** Plain words after stripping HTML (best-effort). */
 export function wordCountFromHtml(html: string): number {
-  const plain = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const plain = htmlToPlainWords(html);
   if (!plain) return 0;
   return plain.split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * After at least `minWords` words, extend to the end of the current sentence (. ! ?), scanning
+ * forward then backward in plain text. Falls back to a hard word boundary if no punctuation fits.
+ */
+export function findPlainCutAfterSentence(plain: string, minWords: number): number {
+  const t = plain.replace(/\s+/g, " ").trim();
+  if (!t) return 0;
+  const words = t.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return 0;
+  if (words.length <= minWords) return t.length;
+
+  const wordRanges: { end: number }[] = [];
+  for (const m of t.matchAll(/\S+/g)) {
+    wordRanges.push({ end: m.index! + m[0].length });
+  }
+  if (wordRanges.length < minWords) return t.length;
+
+  const minEndExclusive = wordRanges[minWords - 1].end;
+  const rawTail = t.slice(minEndExclusive);
+  const leadWs = rawTail.match(/^\s*/)?.[0].length ?? 0;
+  const tail = rawTail.slice(leadWs);
+  const re = /[.!?]["']?(?:\s+|$)/;
+  const m = tail.match(re);
+  if (m && m.index !== undefined) {
+    return Math.min(minEndExclusive + leadWs + m.index + m[0].length, t.length);
+  }
+
+  let best = -1;
+  const head = t.slice(0, minEndExclusive);
+  const reAll = /[.!?]["']?(?:\s+|$)/g;
+  let mm: RegExpExecArray | null;
+  while ((mm = reAll.exec(head)) !== null) {
+    best = mm.index + mm[0].length;
+  }
+  if (best > 0) return best;
+
+  return minEndExclusive;
+}
+
+/**
+ * Split one HTML block into two HTML fragments (escaped plain `<p>`) at ~minWords with sentence end.
+ */
+function splitHtmlBlockAtSentenceBoundary(blockHtml: string, minWords: number): {
+  before: string;
+  after: string;
+} {
+  const plain = htmlToPlainWords(blockHtml);
+  if (!plain) {
+    return { before: blockHtml, after: "" };
+  }
+  const cut = findPlainCutAfterSentence(plain, Math.max(1, minWords));
+  const head = plain.slice(0, cut).trim();
+  const tail = plain.slice(cut).trim();
+  return {
+    before: head ? `<p>${escapeHtml(head)}</p>` : "",
+    after: tail ? `<p>${escapeHtml(tail)}</p>` : "",
+  };
 }
 
 /**
@@ -55,22 +118,22 @@ export function sanitizeFullManuscript(raw: string): string {
 /**
  * Split sanitized HTML into what readers see first vs the remainder.
  *
- * - If total length ≤ ~3 pages (by word count): entire piece is `initialPages`, `fullText` is empty
- *   (flash fiction, short essays, short poems — no unlock needed).
- * - If longer: first ~3 pages of words go to `initialPages`, rest to `fullText` (split at `<p>` boundaries when possible).
+ * - If total words ≤ {@link FIRST_READ_TARGET_WORDS}: entire piece is `initialPages`, `fullText` is empty.
+ * - If longer: first ~{@link FIRST_READ_TARGET_WORDS} words go to `initialPages`, ending at `.` `!` `?` when possible;
+ *   remainder in `fullText`. Splits prefer `<p>` / `<div>` block boundaries, then sentence-aware plain text.
  */
 export function splitIntoInitialPagesAndFullText(html: string): {
   initialPages: string;
   fullText: string;
 } {
   const totalWords = wordCountFromHtml(html);
-  if (totalWords <= FIRST_READ_MAX_WORDS) {
+  if (totalWords <= FIRST_READ_TARGET_WORDS) {
     return { initialPages: html, fullText: "" };
   }
 
   const blocks = segmentHtmlIntoBlocks(html);
   if (blocks.length === 0) {
-    return splitOversizeBlockByWords(html, "");
+    return splitOversizeBlockAtSentence(html, "", FIRST_READ_TARGET_WORDS);
   }
 
   const initialBlocks: string[] = [];
@@ -78,17 +141,23 @@ export function splitIntoInitialPagesAndFullText(html: string): {
   let i = 0;
   for (; i < blocks.length; i++) {
     const w = wordCountFromHtml(blocks[i]);
-    if (w > FIRST_READ_MAX_WORDS && initialBlocks.length === 0) {
-      return splitOversizeBlockByWords(blocks[i], blocks.slice(i + 1).join(""));
-    }
-    if (acc >= FIRST_READ_MAX_WORDS) {
+    if (acc >= FIRST_READ_TARGET_WORDS) {
       break;
     }
-    if (acc + w > FIRST_READ_MAX_WORDS && acc > 0) {
-      break;
+    if (acc + w <= FIRST_READ_TARGET_WORDS) {
+      initialBlocks.push(blocks[i]);
+      acc += w;
+      continue;
     }
-    initialBlocks.push(blocks[i]);
-    acc += w;
+    if (w === 0) continue;
+    const need = FIRST_READ_TARGET_WORDS - acc;
+    if (acc === 0) {
+      return splitOversizeBlockAtSentence(blocks[i], blocks.slice(i + 1).join(""), FIRST_READ_TARGET_WORDS);
+    }
+    const { before, after } = splitHtmlBlockAtSentenceBoundary(blocks[i], need);
+    if (before) initialBlocks.push(before);
+    const restParts = [after, ...blocks.slice(i + 1)].filter((s) => s.trim().length > 0);
+    return { initialPages: initialBlocks.join(""), fullText: restParts.join("") };
   }
 
   const initialPages = initialBlocks.join("");
@@ -126,24 +195,18 @@ function segmentHtmlIntoBlocks(html: string): string[] {
   return divBlocks;
 }
 
-function splitOversizeBlockByWords(firstBlockHtml: string, followingHtml: string): {
+function splitOversizeBlockAtSentence(firstBlockHtml: string, followingHtml: string, minWords: number): {
   initialPages: string;
   fullText: string;
 } {
-  const plain = firstBlockHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const plain = htmlToPlainWords(firstBlockHtml);
   const words = plain.split(/\s+/).filter(Boolean);
-  if (words.length <= FIRST_READ_MAX_WORDS) {
+  if (words.length <= minWords) {
     return { initialPages: firstBlockHtml, fullText: followingHtml };
   }
-  const head = words.slice(0, FIRST_READ_MAX_WORDS).join(" ");
-  const tail = words.slice(FIRST_READ_MAX_WORDS).join(" ");
-  const initialPages = `<p>${escapeHtml(head)}</p>`;
+  const { before, after } = splitHtmlBlockAtSentenceBoundary(firstBlockHtml, minWords);
   const restParts: string[] = [];
-  if (tail) {
-    restParts.push(`<p>${escapeHtml(tail)}</p>`);
-  }
-  if (followingHtml.trim()) {
-    restParts.push(followingHtml);
-  }
-  return { initialPages, fullText: restParts.join("") };
+  if (after.trim()) restParts.push(after);
+  if (followingHtml.trim()) restParts.push(followingHtml);
+  return { initialPages: before || firstBlockHtml, fullText: restParts.join("") };
 }

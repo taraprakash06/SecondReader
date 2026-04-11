@@ -7,6 +7,7 @@ import { CritiqueFeedbackComposer } from "@/components/CritiqueFeedbackComposer"
 import { CritiqueFeedbackReview } from "@/components/CritiqueFeedbackReview";
 import { MarkFeedbackCompleteButton } from "@/components/MarkFeedbackCompleteButton";
 import { stopCritiqueWithReader, submitCritiqueFeedback, unlockFullPieceForReader } from "@/app/critiques/actions";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 import { combinedDraftForMarginAnnotation } from "@/lib/submissionMarginText";
 
 export default async function CritiquePage({
@@ -147,14 +148,16 @@ export default async function CritiquePage({
                 </>
               ) : !submissionHasExtendedPortion ? (
                 <>
-                  You&apos;re critiquing the writer&apos;s <span className="font-medium">full</span> manuscript below—
+                  You&apos;re critiquing the writer&apos;s <span className="font-medium">full</span>{" "}
+                  manuscript below—
                   this submission fits in the first read, so nothing more will unlock. Save often, then mark critique
                   complete when you&apos;re finished.
                 </>
               ) : (
                 <>
-                  Read and annotate the excerpt below (first ~3 pages). Save often. Mark the first pass complete when
-                  you&apos;re done with those pages. If the writer continues with you, the rest of the draft will appear
+                  Read and annotate the excerpt below (first {FIRST_READ_SHARE_LABEL}, ending at a sentence when
+                  possible). Save often. Mark the first pass complete when you&apos;re done with that opening. If the
+                  writer continues with you, the rest of the draft will appear
                   here and you can build on the same feedback.
                 </>
               )}
@@ -245,7 +248,7 @@ export default async function CritiquePage({
                   />
                 </div>
                 <div className="mt-10 border-t border-zinc-200 pt-8">
-                  {/* Whole piece was in the first read (~3 pages or less): no unlock / no Yes–No — just closure */}
+                  {/* Whole piece was in the first read (≤ ~900 words): no unlock / no Yes–No — just closure */}
                   {!sub.fullText.trim() ? (
                     !firstPassComplete ? (
                       <p className="text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>
@@ -263,7 +266,7 @@ export default async function CritiquePage({
                     <>
                       <h3 className="text-sm font-semibold text-zinc-900">Continue with this reader?</h3>
                       <p className="mt-1 text-sm text-zinc-600">
-                        Readers only see your first ~3 pages until you choose to share more. If you say{" "}
+                        Readers only see the first {FIRST_READ_SHARE_LABEL} until you choose to share more. If you say{" "}
                         <span className="font-medium text-zinc-800">Yes</span>, the rest of your manuscript opens to
                         this reader and they’re notified. If you say <span className="font-medium text-zinc-800">No</span>
                         , the rest stays private and they’re notified you’re continuing on your own.

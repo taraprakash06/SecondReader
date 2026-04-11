@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 export default function Home() {
   return (
@@ -26,7 +27,7 @@ export default function Home() {
 
           <p className="max-w-2xl text-base leading-7 text-[color:var(--ink-muted)]">
             Find readers you trust based on their feedback samples. You upload your full manuscript; readers only see
-            your first ~3 pages until you choose to share more. If their feedback is helpful, you can open the rest
+            the first {FIRST_READ_SHARE_LABEL} until you choose to share more. If their feedback is helpful, you can open the rest
             of your piece to them. Readers are limited to a few active critiques so every piece gets real attention.
           </p>
           <p className="max-w-2xl text-base font-medium leading-7 text-[color:var(--ink)]">
@@ -43,8 +44,12 @@ export default function Home() {
               <div>
                 <h2 className="text-lg font-semibold">Submit Your Work</h2>
                 <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
-                  Upload your full piece (readers only see the first ~3 pages at first), set genre + word count, and
+                  Upload your full piece (readers only see the first {FIRST_READ_SHARE_LABEL} at first), set genre + word count, and
                   say what feedback you want.
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
+                  You can remove your piece at any time. If you plan to submit it to a journal, contest, or publication,
+                  remove it from your profile. It will no longer appear on Browse Pieces.
                 </p>
               </div>
               <span className="text-sm font-medium text-[color:var(--brand-magenta)]">
@@ -77,10 +82,10 @@ export default function Home() {
           >
             <div className="flex items-start justify-between gap-6">
               <div>
-                <h2 className="text-lg font-semibold">Submit Feedback Sample</h2>
+                <h2 className="text-lg font-semibold">become a reader</h2>
                 <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
                   Give thoughtful feedback. Build trust. Start with a feedback
-                  sample and review 3-page submissions.
+                  sample and review opening excerpts ({FIRST_READ_SHARE_LABEL}).
                 </p>
               </div>
               <span className="text-sm font-medium text-[color:var(--brand-magenta)]">
@@ -105,7 +110,7 @@ export default function Home() {
                   <Link className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-magenta)]/40 underline-offset-2 hover:decoration-[color:var(--brand-magenta)]" href="/writer">
                     Submit Your Work
                   </Link>
-                  )—readers only see the first ~3 pages until you share more.
+                  )—readers only see the first {FIRST_READ_SHARE_LABEL} until you share more.
                 </li>
                 <li>Browse readers or receive requests.</li>
                 <li>Invite readers you trust (up to 3 readers per piece).</li>
@@ -122,12 +127,12 @@ export default function Home() {
                 <li>
                   Complete your feedback sample (
                   <Link className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-purple)]/40 underline-offset-2 hover:decoration-[color:var(--brand-purple)]" href="/reader">
-                    Submit Feedback Sample
+                    become a reader
                   </Link>
                   ).
                 </li>
                 <li>Browse open submissions or accept invitations from writers.</li>
-                <li>Read the first 3 pages.</li>
+                <li>Read the opening they receive first ({FIRST_READ_SHARE_LABEL}).</li>
                 <li>Leave inline notes + a short summary of feedback.</li>
                 <li>Get invited to read more (up to 3 active critiques at a time).</li>
                 <li>Build trust and long-term partnerships.</li>

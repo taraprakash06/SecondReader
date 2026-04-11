@@ -2,7 +2,9 @@
 
 import React from "react";
 import { useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
 import { signUpAction } from "@/app/auth/sign-up/actions";
+import { safeInternalCallbackUrl } from "@/lib/safeRedirect";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -18,6 +20,11 @@ function SubmitButton() {
 }
 
 export function SignUpForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = React.useMemo(
+    () => safeInternalCallbackUrl(searchParams.get("callbackUrl"), "/onboarding"),
+    [searchParams],
+  );
   const [error, setError] = React.useState<string | null>(null);
 
   async function action(formData: FormData) {
@@ -28,6 +35,7 @@ export function SignUpForm() {
 
   return (
     <form action={action} className="grid gap-3">
+      <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <label className="grid gap-1 text-sm">
         <span className="font-medium text-[color:var(--ink)]">Name</span>
         <input

@@ -3,6 +3,7 @@
 import React from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { safeInternalCallbackUrl } from "@/lib/safeRedirect";
 
 const urlErrorMessages: Record<string, string> = {
   CredentialsSignin: "Invalid email or password.",
@@ -13,6 +14,10 @@ const urlErrorMessages: Record<string, string> = {
 
 export function SignInForm() {
   const searchParams = useSearchParams();
+  const callbackUrl = React.useMemo(
+    () => safeInternalCallbackUrl(searchParams.get("callbackUrl"), "/"),
+    [searchParams],
+  );
   const urlError = searchParams.get("error");
   const [error, setError] = React.useState<string | null>(() =>
     urlError && urlErrorMessages[urlError] ? urlErrorMessages[urlError] : null,
@@ -38,7 +43,7 @@ export function SignInForm() {
       email,
       password,
       redirect: true,
-      callbackUrl: "/",
+      callbackUrl,
     });
 
     if (res?.error) setError("Invalid email or password.");

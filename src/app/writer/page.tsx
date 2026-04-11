@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 export default function WriterLanding() {
   return (
@@ -9,8 +10,8 @@ export default function WriterLanding() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Writer space</h1>
         <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-          Upload your full manuscript, then browse readers by sample and filters. Readers only see your first ~3
-          pages until you choose to share more.
+          Upload your full manuscript, then browse readers by sample and filters. Readers only see the first{" "}
+          {FIRST_READ_SHARE_LABEL} until you choose to share more.
         </p>
       </div>
 
@@ -21,7 +22,7 @@ export default function WriterLanding() {
             <ol className="mt-3 space-y-2 text-sm leading-6 text-[color:var(--ink-muted)]">
               <li>
                 <span className="font-medium text-[color:var(--ink)]">Step 1:</span> Paste your full manuscript—only
-                the first ~3 pages are shown to readers at first.
+                the first {FIRST_READ_SHARE_LABEL} are shown to readers at first.
               </li>
               <li>
                 <span className="font-medium text-[color:var(--ink)]">Step 2:</span> A reader gives inline margin notes
@@ -46,7 +47,11 @@ export default function WriterLanding() {
         >
           <h2 className="text-lg font-semibold">Submit a piece</h2>
           <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
-            Paste your full manuscript; readers only see the first ~3 pages until you choose to share more.
+            Paste your full manuscript; readers only see the first {FIRST_READ_SHARE_LABEL} until you choose to share more.
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
+            You can remove your piece at any time. If you plan to submit it to a journal, contest, or publication, remove
+            it from your profile. It will no longer appear on Browse Pieces.
           </p>
         </Link>
 

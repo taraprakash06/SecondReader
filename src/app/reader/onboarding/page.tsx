@@ -84,17 +84,21 @@ async function saveFeedbackSample(formData: FormData) {
   redirect(`/readers/${user.id}`);
 }
 
-export default async function ReaderOnboardingPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ email?: string; name?: string }>;
-}) {
+export default async function ReaderOnboardingPage() {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/auth/sign-in");
   }
 
   const userId = session.user.id;
+
+  const account = await db.user.findUnique({
+    where: { id: userId },
+    select: { name: true, email: true },
+  });
+  const displayEmail = account?.email ?? "";
+  const displayName =
+    account?.name?.trim() || (displayEmail ? displayEmail.split("@")[0] : "Reader");
 
   const existingProfile = await db.readerProfile.findUnique({
     where: { userId },
@@ -103,8 +107,6 @@ export default async function ReaderOnboardingPage({
   if (existingProfile && existingProfile.feedbackSamples.length > 0) {
     redirect(`/readers/${userId}`);
   }
-
-  const sp = (await searchParams) ?? {};
 
   const samplePiece = await getToothSamplePiece();
 
@@ -146,23 +148,19 @@ export default async function ReaderOnboardingPage({
         className="mt-8 overflow-visible rounded-3xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] p-[1px] shadow-sm"
       >
         <div className="rounded-[23px] border border-zinc-200 bg-white/90 p-6 backdrop-blur">
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-[color:var(--ink)]">Your name</span>
-              <input
-                name="name"
-                defaultValue={sp.name ?? "Reader"}
-                className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-magenta)]/50 focus:outline-none"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-[color:var(--ink)]">Email</span>
-              <input
-                name="email"
-                defaultValue={sp.email ?? ""}
-                className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm focus:border-[color:var(--brand-purple)]/50 focus:outline-none"
-              />
-            </label>
+          <div className="rounded-xl border border-zinc-200 bg-[color:var(--paper-2)] px-4 py-3">
+            <p className="text-xs font-semibold text-[color:var(--ink-muted)]">Your account</p>
+            <p className="mt-1 text-sm font-semibold text-[color:var(--ink)]">{displayName}</p>
+            {displayEmail ? (
+              <p className="mt-0.5 text-xs text-[color:var(--ink-muted)]">{displayEmail}</p>
+            ) : null}
+            <p className="mt-2 text-xs leading-5 text-[color:var(--ink-muted)]">
+              Inline notes use your account name. To change how you’re shown, update your name on{" "}
+              <Link className="font-medium text-[color:var(--brand-magenta)] hover:underline" href="/profile">
+                Profile
+              </Link>
+              .
+            </p>
           </div>
 
           <div className="mt-6 rounded-xl border border-zinc-200 bg-[color:var(--paper-2)] p-4">

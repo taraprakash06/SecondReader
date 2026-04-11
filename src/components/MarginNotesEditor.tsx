@@ -48,6 +48,13 @@ export function MarginNotesEditor({
 
   const messageInputRef = React.useRef<HTMLInputElement | null>(null);
 
+  function isNodeInsideManuscriptSource(node: Node | null): boolean {
+    if (!node) return false;
+    const el =
+      node.nodeType === Node.TEXT_NODE ? (node.parentElement as Element | null) : (node as Element | null);
+    return !!el?.closest("[data-margin-manuscript-source]");
+  }
+
   function setModeAndReset(next: "comment" | "suggest") {
     setMode(next);
     if (next === "suggest") {
@@ -75,7 +82,17 @@ export function MarginNotesEditor({
 
   function captureSelection() {
     const sel = window.getSelection();
-    const text = sel?.toString() ?? "";
+    if (!sel || sel.rangeCount === 0) {
+      setSelection("");
+      return;
+    }
+    const anchor = sel.anchorNode;
+    const focus = sel.focusNode;
+    if (!isNodeInsideManuscriptSource(anchor) || !isNodeInsideManuscriptSource(focus)) {
+      setSelection("");
+      return;
+    }
+    const text = sel.toString() ?? "";
     const cleaned = text.replace(/\s+/g, " ").trim();
     setSelection(cleaned);
   }

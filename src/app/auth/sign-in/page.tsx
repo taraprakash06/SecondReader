@@ -3,10 +3,19 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { SignInForm } from "@/components/SignInForm";
+import { safeInternalCallbackUrl } from "@/lib/safeRedirect";
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ callbackUrl?: string | string[] }>;
+}) {
+  const sp = (await searchParams) ?? {};
+  const raw = Array.isArray(sp.callbackUrl) ? sp.callbackUrl[0] : sp.callbackUrl;
+  const destination = safeInternalCallbackUrl(raw, "/");
+
   const session = await auth();
-  if (session?.user?.id) redirect("/");
+  if (session?.user?.id) redirect(destination);
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-16">
@@ -30,7 +39,14 @@ export default async function SignInPage() {
           </Suspense>
           <p className="mt-4 text-sm text-[color:var(--ink-muted)]">
             New here?{" "}
-            <Link className="font-semibold text-[color:var(--brand-magenta)]" href="/auth/sign-up">
+            <Link
+              className="font-semibold text-[color:var(--brand-magenta)]"
+              href={
+                destination === "/"
+                  ? "/auth/sign-up"
+                  : `/auth/sign-up?callbackUrl=${encodeURIComponent(destination)}`
+              }
+            >
               Create an account
             </Link>
             .
