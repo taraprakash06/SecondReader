@@ -82,7 +82,7 @@ export default function Home() {
           >
             <div className="flex items-start justify-between gap-6">
               <div>
-                <h2 className="text-lg font-semibold">become a reader</h2>
+                <h2 className="text-lg font-semibold">Become a Reader</h2>
                 <p className="mt-1 text-sm leading-6 text-[color:var(--ink-muted)]">
                   Give thoughtful feedback. Build trust. Start with a feedback
                   sample and review opening excerpts ({FIRST_READ_SHARE_LABEL}).
@@ -127,7 +127,7 @@ export default function Home() {
                 <li>
                   Complete your feedback sample (
                   <Link className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-purple)]/40 underline-offset-2 hover:decoration-[color:var(--brand-purple)]" href="/reader">
-                    become a reader
+                    Become a Reader
                   </Link>
                   ).
                 </li>

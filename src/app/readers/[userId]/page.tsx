@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { BrowseReadersAuthGate } from "@/components/BrowseReadersAuthGate";
 import { MarginCommentsStatic } from "@/components/MarginCommentsStatic";
 import { InviteReaderForm } from "@/app/readers/[userId]/InviteReaderForm";
 
@@ -12,10 +13,28 @@ export default async function ReaderProfilePage({
 }) {
   const { userId } = await params;
   const session = await auth();
-  const isSelf = session?.user?.id === userId;
+
+  if (!session?.user?.id) {
+    return (
+      <div className="mx-auto w-full max-w-4xl px-6 py-12">
+        <div className="flex flex-col gap-2">
+          <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
+            ← Home
+          </Link>
+          <h1 className="text-2xl font-semibold tracking-tight">Reader profile</h1>
+          <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
+            Sign in to view this reader&apos;s public feedback sample and invite them to your work.
+          </p>
+        </div>
+        <BrowseReadersAuthGate callbackPath={`/readers/${userId}`} />
+      </div>
+    );
+  }
+
+  const isSelf = session.user.id === userId;
 
   const writerSubmissions =
-    session?.user?.id && !isSelf
+    !isSelf
       ? await db.submission.findMany({
           where: { writerId: session.user.id },
           orderBy: { createdAt: "desc" },
@@ -128,19 +147,7 @@ export default async function ReaderProfilePage({
             After you’ve read their sample, choose a piece you’ve submitted and send an invite. They’ll
             get a notification and can accept or decline.
           </p>
-          {session?.user?.id ? (
-            <InviteReaderForm readerUserId={userId} submissions={writerSubmissions} />
-          ) : (
-            <p className="mt-4 text-sm text-[color:var(--ink-muted)]">
-              <Link
-                className="font-semibold text-[color:var(--brand-magenta)] hover:underline"
-                href={`/auth/sign-in?callbackUrl=${encodeURIComponent(`/readers/${userId}`)}`}
-              >
-                Sign in
-              </Link>{" "}
-              as a writer to invite this reader.
-            </p>
-          )}
+          <InviteReaderForm readerUserId={userId} submissions={writerSubmissions} />
         </section>
       ) : null}
     </div>

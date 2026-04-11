@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createVolunteerReadRequest } from "@/app/pieces/actions";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 type State =
   | "signed_out"
@@ -75,12 +76,17 @@ export function RequestToReadButton({
 
   if (state === "signed_out") {
     return (
-      <Link
-        className="inline-flex h-10 items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
-        href={`/auth/sign-in?callbackUrl=${encodeURIComponent(signInCallbackUrl)}`}
-      >
-        Sign in to request
-      </Link>
+      <div className="flex flex-col gap-1.5">
+        <Link
+          className="inline-flex h-10 w-fit items-center justify-center rounded-xl bg-[linear-gradient(90deg,var(--brand-magenta),var(--brand-purple))] px-4 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+          href={`/auth/sign-in?callbackUrl=${encodeURIComponent(signInCallbackUrl)}`}
+        >
+          Sign in to request
+        </Link>
+        <p className="max-w-md text-xs leading-relaxed text-[color:var(--ink-muted)]">
+          Sign in to request access to the first section ({FIRST_READ_SHARE_LABEL}).
+        </p>
+      </div>
     );
   }
 

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { BrowseReadersAuthGate } from "@/components/BrowseReadersAuthGate";
 import { db } from "@/lib/db";
 
 type SearchParams = {
@@ -11,12 +13,43 @@ function normalizeStringParam(input: string | string[] | undefined) {
   return Array.isArray(input) ? input[0] ?? "" : input;
 }
 
+/** Callback after sign-in so guests return to the same browse URL (filters preserved). */
+function browseReadersLocation(sp: SearchParams): string {
+  const age = normalizeStringParam(sp.age);
+  const q = normalizeStringParam(sp.q);
+  const params = new URLSearchParams();
+  if (age) params.set("age", age);
+  if (q) params.set("q", q);
+  const qs = params.toString();
+  return qs ? `/readers?${qs}` : "/readers";
+}
+
 export default async function ReadersPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const session = await auth();
   const sp = await searchParams;
+
+  if (!session?.user?.id) {
+    return (
+      <div className="mx-auto w-full max-w-5xl px-6 py-12">
+        <div className="flex flex-col gap-2">
+          <Link className="text-sm font-medium text-[color:var(--ink-muted)] hover:text-[color:var(--ink)]" href="/">
+            ← Home
+          </Link>
+          <h1 className="text-2xl font-semibold tracking-tight">Browse readers</h1>
+          <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
+            Readers are shown with a public feedback sample (required). Filter by age category and search by
+            name/genres/values.
+          </p>
+        </div>
+        <BrowseReadersAuthGate callbackPath={browseReadersLocation(sp)} />
+      </div>
+    );
+  }
+
   const age = normalizeStringParam(sp.age);
   const q = normalizeStringParam(sp.q);
 
