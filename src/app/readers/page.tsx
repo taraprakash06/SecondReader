@@ -132,7 +132,7 @@ export default async function ReadersPage({
               <div className="min-w-0 space-y-2 sm:pr-4">
                 <h2 className="text-lg font-semibold leading-snug">{r.user.name}</h2>
                 <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">
-                  <span className="font-medium text-[color:var(--ink)]">Genres:</span>{" "}
+                  <span className="font-medium text-[color:var(--ink)]">Genres I&apos;m comfortable reading:</span>{" "}
                   <span className="break-words">{r.genres || "—"}</span>
                 </p>
                 <p className="text-sm leading-relaxed text-[color:var(--ink-muted)]">

@@ -141,7 +141,7 @@ export default async function ProfilePage() {
             <h3 className="text-2xl font-semibold tracking-tight text-[color:var(--ink)]">{user.name}</h3>
             <dl className="mt-4 space-y-2 text-sm">
               <div>
-                <dt className="inline font-medium text-[color:var(--ink)]">Genres:</dt>{" "}
+                <dt className="inline font-medium text-[color:var(--ink)]">Genres I&apos;m comfortable reading:</dt>{" "}
                 <dd className="inline text-[color:var(--ink-muted)]">
                   {readerGenres.trim() ? readerGenres : "—"}
                 </dd>
@@ -168,7 +168,10 @@ export default async function ProfilePage() {
             </p>
             <div className="mt-4 space-y-4">
               <label className="grid gap-1 text-sm">
-                <span className="font-medium text-[color:var(--ink)]">Genres</span>
+                <span className="font-medium text-[color:var(--ink)]">Genres I&apos;m comfortable reading</span>
+                <p className="text-xs text-[color:var(--ink-muted)]">
+                  Select the genres you feel confident giving feedback on.
+                </p>
                 <input
                   name="genres"
                   type="text"

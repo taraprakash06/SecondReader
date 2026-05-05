@@ -69,7 +69,7 @@ export default async function ReaderProfilePage({
         <h1 className="text-2xl font-semibold tracking-tight">{profile.user.name}</h1>
         <dl className="mt-4 space-y-2 text-sm">
           <div>
-            <dt className="inline font-medium text-[color:var(--ink)]">Genres:</dt>{" "}
+            <dt className="inline font-medium text-[color:var(--ink)]">Genres I&apos;m comfortable reading:</dt>{" "}
             <dd className="inline text-[color:var(--ink-muted)]">{profile.genres.trim() ? profile.genres : "—"}</dd>
           </div>
           <div>
