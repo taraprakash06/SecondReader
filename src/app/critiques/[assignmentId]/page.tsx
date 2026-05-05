@@ -254,7 +254,7 @@ export default async function CritiquePage({
                   />
                 </div>
                 <div className="mt-10 border-t border-zinc-200 pt-8">
-                  {/* Whole piece was in the first read (≤ ~900 words): no unlock / no Yes–No — just closure */}
+                  {/* Whole piece was in the first read (≤ ~1,000 words): no unlock / no Yes–No — just closure */}
                   {!sub.fullText.trim() ? (
                     !firstPassComplete ? (
                       <p className="text-sm text-zinc-600">Waiting for the reader to finish the first pass.</p>

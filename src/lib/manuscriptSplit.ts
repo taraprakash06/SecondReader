@@ -4,10 +4,10 @@ import { richTextPlainLength, sanitizeManuscriptRichText } from "@/lib/sanitizeR
  * Target word count for the reader’s first pass (before unlock). Split prefers ending at
  * `.` `!` `?` shortly after this count so sentences are not cut mid-way.
  */
-export const FIRST_READ_TARGET_WORDS = 900;
+export const FIRST_READ_TARGET_WORDS = 1000;
 
 /** User-facing shorthand; keep aligned with {@link FIRST_READ_TARGET_WORDS}. */
-export const FIRST_READ_SHARE_LABEL = "~900 words";
+export const FIRST_READ_SHARE_LABEL = "~1,000 words";
 
 /** @deprecated Use {@link FIRST_READ_TARGET_WORDS}. Kept for any external imports. */
 export const FIRST_READ_MAX_WORDS = FIRST_READ_TARGET_WORDS;

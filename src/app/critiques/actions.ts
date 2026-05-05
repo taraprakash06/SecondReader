@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { CritiqueStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { FIRST_READ_SHARE_LABEL } from "@/lib/manuscriptSplit";
 
 /** After the reader saves feedback, clear the “open piece & leave feedback” notification. */
 async function markVolunteerAcceptedNotificationRead(readerId: string, assignmentId: string) {
@@ -147,7 +148,7 @@ export async function markCritiqueFeedbackComplete(assignmentId: string) {
 
   if (!assignment.firstPassComplete) {
     if (!hasExtendedManuscript) {
-      // Whole manuscript fits the first read (≤ ~900 words): one step—no unlock phase.
+      // Whole manuscript fits the first read (≤ ~1,000 words): one step—no unlock phase.
       await db.critiqueAssignment.update({
         where: { id: assignmentId },
         data: {
@@ -257,7 +258,7 @@ export async function unlockFullPieceForReader(assignmentId: string) {
         userId: assignment.readerId,
         type: "FULL_PIECE_UNLOCKED",
         title: `${writerName} unlocked the full piece for your feedback`,
-        body: `${writerName} appreciated your feedback on the opening they saw first (~900 words), and is unlocking the full piece for you to access and provide feedback on here. Open the critique to see your earlier margin notes on the opening, then the rest of the manuscript below.`,
+        body: `${writerName} appreciated your feedback on the opening they saw first (${FIRST_READ_SHARE_LABEL}), and is unlocking the full piece for you to access and provide feedback on here. Open the critique to see your earlier margin notes on the opening, then the rest of the manuscript below.`,
         relatedAssignmentId: assignment.id,
       },
     });

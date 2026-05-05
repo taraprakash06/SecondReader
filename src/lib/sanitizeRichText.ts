@@ -98,7 +98,7 @@ export function sanitizeAndValidateInitialPages(raw: string): string {
   }
   if (plainLen > MAX_PLAIN_CHARS) {
     throw new Error(
-      "That excerpt is longer than the initial share (~900 words). Shorten the paste and try again.",
+      "That excerpt is longer than the initial share (~1,000 words). Shorten the paste and try again.",
     );
   }
   return html;

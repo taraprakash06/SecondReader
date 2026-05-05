@@ -194,7 +194,7 @@ model Submission {
   writerBrowseNote String   @default("")
   /// When false, the piece is hidden from Browse Pieces and volunteers cannot request.
   requestsOpen Boolean       @default(true)
-  initialPages String        // gated first read (~900 words, sentence-aware)
+  initialPages String        // gated first read (~1,000 words, sentence-aware)
   fullText     String        @default("") // optional: additional pages unlocked later
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -210,7 +210,7 @@ model CritiqueAssignment {
   submissionId  String
   readerId      String
   status        CritiqueStatus @default(ACTIVE)
-  /// Reader finished feedback on the initial gate (~900 words at first).
+  /// Reader finished feedback on the initial gate (~1,000 words at first).
   firstPassComplete Boolean     @default(false)
   firstPassCompletedAt DateTime?
   /// Writer decision after first pass completes. Null = not decided yet.
