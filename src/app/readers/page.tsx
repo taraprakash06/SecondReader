@@ -4,7 +4,7 @@ import { BrowseReadersAuthGate } from "@/components/BrowseReadersAuthGate";
 import { db } from "@/lib/db";
 
 type SearchParams = {
-  age?: string;
+  genre?: string;
   q?: string;
 };
 
@@ -15,10 +15,10 @@ function normalizeStringParam(input: string | string[] | undefined) {
 
 /** Callback after sign-in so guests return to the same browse URL (filters preserved). */
 function browseReadersLocation(sp: SearchParams): string {
-  const age = normalizeStringParam(sp.age);
+  const genre = normalizeStringParam(sp.genre);
   const q = normalizeStringParam(sp.q);
   const params = new URLSearchParams();
-  if (age) params.set("age", age);
+  if (genre) params.set("genre", genre);
   if (q) params.set("q", q);
   const qs = params.toString();
   return qs ? `/readers?${qs}` : "/readers";
@@ -41,7 +41,7 @@ export default async function ReadersPage({
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">Browse readers</h1>
           <p className="text-sm leading-6 text-[color:var(--ink-muted)]">
-            Readers are shown with a public feedback sample (required). Filter by age category and search by
+            Readers are shown with a public feedback sample (required). Filter by genre and search by
             name/genres/values.
           </p>
         </div>
@@ -50,11 +50,12 @@ export default async function ReadersPage({
     );
   }
 
-  const age = normalizeStringParam(sp.age);
+  const genre = normalizeStringParam(sp.genre);
   const q = normalizeStringParam(sp.q);
 
   const readers = await db.readerProfile.findMany({
     where: {
+      ...(genre ? { genres: { contains: genre } } : {}),
       ...(q
         ? {
             OR: [
@@ -64,7 +65,6 @@ export default async function ReadersPage({
             ],
           }
         : {}),
-      ...(age ? { ageCategory: age as never } : {}),
       feedbackSamples: { some: {} },
     },
     include: {
@@ -79,14 +79,6 @@ export default async function ReadersPage({
     take: 50,
   });
 
-  const ageOptions = [
-    { id: "", label: "Any age" },
-    { id: "TEEN", label: "Teen" },
-    { id: "ADULT", label: "Adult" },
-    { id: "SENIOR", label: "Senior" },
-    { id: "UNSPECIFIED", label: "Unspecified" },
-  ];
-
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex flex-col gap-2">
@@ -95,33 +87,27 @@ export default async function ReadersPage({
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Browse readers</h1>
         <p className="text-sm leading-relaxed text-[color:var(--ink-muted)] sm:leading-6">
-          Readers are shown with a public feedback sample (required). Filter by age category
-          and search by name/genres/values.
+          Readers are shown with a public feedback sample (required). Filter by genre and search by name/genres/values.
         </p>
       </div>
 
       <form className="mt-6 grid gap-4 rounded-2xl border border-zinc-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:mt-8 md:grid-cols-3">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium">Age category</span>
-          <select
-            name="age"
-            defaultValue={age}
+          <span className="font-medium">Genre</span>
+          <input
+            name="genre"
+            defaultValue={genre}
+            placeholder="e.g., science fiction, poetry"
             className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-purple)]/50 focus:outline-none md:min-h-10 md:text-sm"
-          >
-            {ageOptions.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          />
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm md:col-span-2">
-          <span className="font-medium">Search</span>
+          <span className="font-medium">Search readers</span>
           <input
             name="q"
             defaultValue={q}
-            placeholder="e.g., poetry, pacing, line edits"
+            placeholder="Search by name, focus, or feedback style"
             className="min-h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-base focus:border-[color:var(--brand-magenta)]/50 focus:outline-none md:min-h-10 md:text-sm"
           />
         </label>
