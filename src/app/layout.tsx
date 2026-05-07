@@ -92,7 +92,13 @@ export default async function RootLayout({
               </div>
             </div>
           </header>
-          {children}
+          <main className="flex-1">{children}</main>
+          <footer className="border-t border-zinc-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+            <div className="mx-auto w-full max-w-6xl px-4 py-6 text-center text-xs text-[color:var(--ink-muted)] sm:px-6">
+              <p>© 2026 Second Reader™</p>
+              <p className="mt-1">A Write to Right initiative</p>
+            </div>
+          </footer>
         </Providers>
       </body>
     </html>
