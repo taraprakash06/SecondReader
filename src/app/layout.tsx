@@ -52,7 +52,7 @@ export default async function RootLayout({
                 <div className="relative h-8 w-32 min-[360px]:w-36">
                   <Image
                     src="/second-reader-logo.svg"
-                    alt="Second Reader"
+                    alt="Second Reader™"
                     fill
                     className="object-contain object-left"
                     priority

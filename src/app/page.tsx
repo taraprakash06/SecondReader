@@ -12,7 +12,7 @@ export default function Home() {
             <div className="relative h-12 w-full max-w-[280px] sm:h-14">
               <Image
                 src="/second-reader-logo.svg"
-                alt="Second Reader"
+                alt="Second Reader™"
                 fill
                 priority
                 className="object-contain object-left"

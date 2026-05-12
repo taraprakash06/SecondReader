@@ -45,9 +45,13 @@
     <text x="245" y="0" dominant-baseline="middle" fill="#0F0F13" font-size="64" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="800" letter-spacing="-1.5">
       Reader
     </text>
-    <rect x="0" y="56" width="460" height="10" rx="5" fill="url(#srGradient)" opacity="0.95"/>
-    <text x="0" y="108" fill="#3F3F46" font-size="18" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="600" letter-spacing="0.2">
-      Trust-first critique partner space
+    <text x="472" y="-18" dominant-baseline="middle" fill="#0F0F13" font-size="24" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="800" letter-spacing="-0.5">
+      ™
+    </text>
+    <rect x="0" y="56" width="500" height="10" rx="5" fill="url(#srGradient)" opacity="0.95"/>
+    <text fill="#3F3F46" font-size="24" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="600" letter-spacing="0.02">
+      <tspan x="0" y="102">A place for thoughtful feedback</tspan>
+      <tspan x="0" dy="32">and trusted readers.</tspan>
     </text>
   </g>
 </svg>
