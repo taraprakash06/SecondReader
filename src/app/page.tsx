@@ -20,7 +20,7 @@ export default function Home() {
             </div>
             <div className="min-w-0 max-w-full sm:pt-1">
               <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-                Second Reader
+                Second Reader™
               </h1>
             </div>
           </div>

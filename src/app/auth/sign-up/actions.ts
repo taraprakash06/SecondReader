@@ -13,6 +13,14 @@ const schema = z.object({
 });
 
 export async function signUpAction(formData: FormData) {
+  const acceptTerms = formData.get("acceptTerms");
+  if (acceptTerms !== "on") {
+    return {
+      ok: false as const,
+      error: "Please check the box to agree to the Terms of Service and Privacy Policy.",
+    };
+  }
+
   const raw = {
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),

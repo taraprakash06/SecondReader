@@ -94,9 +94,28 @@ export default async function RootLayout({
           </header>
           <main className="flex-1">{children}</main>
           <footer className="border-t border-zinc-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-            <div className="mx-auto w-full max-w-6xl px-4 py-6 text-center text-xs text-[color:var(--ink-muted)] sm:px-6">
-              <p>© 2026 Second Reader™</p>
-              <p className="mt-1">A Write to Right initiative</p>
+            <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-xs text-[color:var(--ink-muted)] sm:px-6">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                <Link
+                  href="/privacy"
+                  className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-magenta)]/35 underline-offset-2 hover:text-[color:var(--brand-magenta)] hover:decoration-[color:var(--brand-magenta)]"
+                >
+                  Privacy Policy
+                </Link>
+                <span className="hidden text-zinc-300 sm:inline" aria-hidden>
+                  |
+                </span>
+                <Link
+                  href="/terms"
+                  className="font-medium text-[color:var(--ink)] underline decoration-[color:var(--brand-magenta)]/35 underline-offset-2 hover:text-[color:var(--brand-magenta)] hover:decoration-[color:var(--brand-magenta)]"
+                >
+                  Terms of Service
+                </Link>
+              </div>
+              <div>
+                <p>© 2026 Second Reader™</p>
+                <p className="mt-1">A Write to Right initiative</p>
+              </div>
             </div>
           </footer>
         </Providers>
