@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Second Reader: A peer feedback platform connecting writers with readers for thoughtful, human-centered critique.
 
-## Getting Started
+Second Reader is a platform designed to make it easier for writers to get meaningful feedback on their work. Writers can share their piece, indicate what kind of feedback they are looking for, browse other writers' work, and connect with peers for constructive critique. Only part of their piece is shared initially. If they like the feedback they received on the first portion, the rest of the piece is automatically unlocked to the critique partner.
 
-First, run the development server:
+The platform is built around a simple idea: sometimes a writer doesn't need an editor—they just need a second reader.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Share writing** — Upload your work for other writers to read and critique.
+- **Request specific feedback** — Let readers know what aspects of your piece you would especially like feedback on.
+- **Browse writing** — Discover pieces from other writers across genres.
+- **Writer profiles** — Learn more about other writers and their interests.
+- **Peer feedback** — Give and receive thoughtful, human-to-human critique.
+- **Messaging** — Connect directly with other writers and potential critique partners.
+- **Submission controls** — Writers can remove their work when they no longer want it publicly available.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Why I Built It
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Finding a trusted second reader can be surprisingly difficult. Existing writing communities are often scattered across workshops, social media, group chats, and personal networks.
 
-## Learn More
+I built Second Reader to create a dedicated space where writers can find people willing to engage seriously with their work, and return the favor.
 
-To learn more about Next.js, take a look at the following resources:
+Rather than replacing human readers with AI-generated critique, Second Reader focuses on facilitating genuine exchange between writers.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How It Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create a writer profile.
+2. Share your writing.
+3. Tell readers what kind of feedback would be most useful.
+4. Browse and respond to other writers' work.
+5. Connect with writers for further feedback and conversation.
 
-## Deploy on Vercel
+## Built With
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Second Reader was designed and developed as an independent web project using tools including Cursor, GitHub, and Render.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Status
+
+Second Reader is currently in development and testing, with an early pilot focused on gathering feedback from writers and writing communities, including Writopia Lab and the Writer's Center Bethesda.
